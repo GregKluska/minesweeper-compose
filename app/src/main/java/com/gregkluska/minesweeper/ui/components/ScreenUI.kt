@@ -17,14 +17,25 @@ import com.gregkluska.minesweeper.ui.theme.MinesweeperTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenUI(
-    content: @Composable (PaddingValues) -> Unit
+    flags: Int = 0,
+    mines: Int = 10,
+    flagMode: Boolean = true,
+    setFlagMode: (Boolean) -> Unit = {},
+    content: @Composable (PaddingValues) -> Unit,
 ) {
 
     MinesweeperTheme {
         Scaffold(
             modifier = Modifier.background(MaterialTheme.colorScheme.background),
             topBar = { TopBar() },
-            bottomBar = { BottomBar() },
+            bottomBar = {
+                BottomBar(
+                    flags = flags,
+                    mines = mines,
+                    flagMode = flagMode,
+                    setFlagMode = setFlagMode
+                )
+            },
             floatingActionButton = {},
             content = content
         )
