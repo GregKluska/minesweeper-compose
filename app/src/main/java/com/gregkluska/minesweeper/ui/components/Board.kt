@@ -20,13 +20,19 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import com.gregkluska.minesweeper.Field
+import com.gregkluska.minesweeper.Field.Companion.DETONATED_BY_MINE
+import com.gregkluska.minesweeper.Field.Companion.DETONATED_BY_PLAYER
+import com.gregkluska.minesweeper.ui.canvas.drawFlag
 import com.gregkluska.minesweeper.ui.theme.Orange
+
 
 @Composable
 fun Board(
     modifier: Modifier = Modifier,
     fields: List<List<Field>>,
     fieldColors: FieldColors = fieldColors(),
+    detonatedColor: Color = MaterialTheme.colorScheme.error,
+    detonatedColorAlt: Color = MaterialTheme.colorScheme.errorContainer,
     onClick: (row: Int, col: Int) -> Unit = { _, _ -> },
 ) {
     BoxWithConstraints(
@@ -131,6 +137,54 @@ fun Board(
                                 y = r * fieldSize
                             ),
                             size = Size(fieldSize, fieldSize)
+                        )
+
+                        if (fields[r][c].isFlagged) {
+                            // flag
+                            drawFlag(
+                                topLeft = Offset(
+                                    x = c * fieldSize,
+                                    y = r * fieldSize
+                                ),
+                                size = Size(fieldSize, fieldSize)
+                            )
+
+                        }
+                    }
+
+                    if (fields[r][c].value == DETONATED_BY_PLAYER) {
+                        drawRect(
+                            color = detonatedColor,
+                            topLeft = Offset(
+                                x = c * fieldSize,
+                                y = r * fieldSize
+                            ),
+                            size = Size(fieldSize, fieldSize)
+                        )
+                        drawCircle(
+                            color = detonatedColorAlt,
+                            radius = fieldSize / 4,
+                            center = Offset(
+                                x = c * fieldSize + fieldSize / 2,
+                                y = r * fieldSize + fieldSize / 2
+                            )
+                        )
+                    } else if (fields[r][c].value == DETONATED_BY_MINE) {
+                        drawRect(
+                            color = detonatedColorAlt,
+                            topLeft = Offset(
+                                x = c * fieldSize,
+                                y = r * fieldSize
+                            ),
+                            size = Size(fieldSize, fieldSize)
+                        )
+                        drawCircle(
+                            color = detonatedColor,
+                            radius = fieldSize / 4,
+                            center = Offset(
+                                x = c * fieldSize + fieldSize / 2,
+                                y = r * fieldSize + fieldSize / 2
+                            )
                         )
                     }
                     h++
