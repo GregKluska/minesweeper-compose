@@ -1,11 +1,21 @@
 package com.gregkluska.minesweeper
 
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.gregkluska.minesweeper.Field.Companion.DETONATED_BY_MINE
 import com.gregkluska.minesweeper.Field.Companion.DETONATED_BY_PLAYER
 import com.gregkluska.minesweeper.Field.Companion.MINE
+
+sealed class UserEvent {
+    data class Reveal(val x: Int, val y: Int) : UserEvent()
+    data class ToggleFlag(val x: Int, val y: Int) : UserEvent()
+    object NewGame : UserEvent()
+}
+
+sealed class GameEvent {
+    object GameLose : GameEvent()
+    object GameWin : GameEvent()
+}
 
 /**
  * Field date class
@@ -19,7 +29,7 @@ import com.gregkluska.minesweeper.Field.Companion.MINE
 data class Field(
     val value: Int = 0,
     val isRevealed: Boolean = false,
-    val isFlagged: Boolean = false
+    val isFlagged: Boolean = false,
 ) {
     companion object {
         const val MINE = -1
@@ -29,38 +39,54 @@ data class Field(
 }
 
 class Minesweeper(
-    val width: Int,
-    val height: Int,
+    private val width: Int,
+    private val height: Int,
     val mines: Int,
+    private val onGameEvent: (GameEvent) -> Unit
 ) {
-    val board = List(height) { List(width) { mutableStateOf(Field()) } }
-    var flagMode by mutableStateOf(false)
-    var flags by mutableStateOf(0)
-        private set
-
-    private var initialised: Boolean = false
 
     /**
-     * Mine coords, X to Y
+     * TODO: Docs
      */
-    private val minesCoords = mutableListOf<Pair<Int, Int>>()
+    val board: List<List<State<Field>>>
+        get() = _board
 
-    var gameOver by mutableStateOf(false)
-        private set
+    /**
+     * TODO: Docs
+     */
+    val flags: State<Int>
+        get() = _flags
+
+
+    private val _board = List(height) { List(width) { mutableStateOf(Field()) } }
+    private val _flags = mutableStateOf(0)
+    private val minesCoords = mutableListOf<Pair<Int, Int>>()
+    private var initialised: Boolean = false
+    private var gameOver = false
+    private var revealed = 0
 
     init {
         require(width > 0 && height > 0 && mines > 0 && width * height > mines)
     }
 
-    private fun reset() {
-        for (r in board.indices) {
-            for (c in board[0].indices) {
-                board[r][c].value = Field()
+    fun handleEvent(userEvent: UserEvent) {
+        when (userEvent) {
+            is UserEvent.Reveal -> {
+                reveal(
+                    x = userEvent.x.coerceIn(0 until width),
+                    y = userEvent.y.coerceIn(0 until height)
+                )
             }
+
+            is UserEvent.ToggleFlag -> {
+                toggleFlag(
+                    x = userEvent.x.coerceIn(0 until width),
+                    y = userEvent.y.coerceIn(0 until height)
+                )
+            }
+
+            UserEvent.NewGame -> reset() // Test it
         }
-        minesCoords.clear()
-        flags = 0
-        initialised = false
     }
 
     /**
@@ -70,18 +96,19 @@ class Minesweeper(
         cx: Int? = null,
         cy: Int? = null
     ) {
-        reset()
+//        reset()
 
         var mineShuffle = List(width * height) { if (it < mines) -1 else 0 }.shuffled()
 
-        val cIdx: Int? = if(cx != null && cy != null) {
+        val cIdx: Int? = if (cx != null && cy != null) {
             height * cy + cx
         } else {
             null
         }
 
+        // If provided coords is mine, then reshuffle until it isn't
         cIdx?.let {
-            while(mineShuffle[it] == -1){
+            while (mineShuffle[it] == -1) {
                 mineShuffle = mineShuffle.shuffled()
             }
         }
@@ -90,7 +117,7 @@ class Minesweeper(
             if (mineShuffle[i] == 0) continue
             val y = i.div(width)
             val x = i - (y * width)
-            board[y][x].value = board[y][x].value.copy(value = MINE)
+            _board[y][x].value = _board[y][x].value.copy(value = MINE)
             minesCoords.add(x to y)
             updateAdjacentMines(x, y)
         }
@@ -99,32 +126,22 @@ class Minesweeper(
         initialised = true
     }
 
-    fun click(row: Int, col: Int) {
-        val x = col.coerceIn(0 until width)
-        val y = row.coerceIn(0 until height)
-        if (!flagMode) {
-            reveal(x, y)
-        } else {
-            flag(x, y)
-        }
-    }
-
-    private fun flag(x: Int, y: Int) {
+    private fun toggleFlag(x: Int, y: Int) {
         if (gameOver) return
-        val field = board[y][x].value
+        val field = _board[y][x].value
         if (field.isRevealed) return
 
         val isFlagged = field.isFlagged
 
         when {
             isFlagged -> {
-                board[y][x].value = field.copy(isFlagged = false)
-                flags--
+                _board[y][x].value = field.copy(isFlagged = false)
+                _flags.value = _flags.value - 1
             }
 
-            !isFlagged && flags < mines -> {
-                board[y][x].value = field.copy(isFlagged = true)
-                flags++
+            !isFlagged && _flags.value < mines -> {
+                _board[y][x].value = field.copy(isFlagged = true)
+                _flags.value = _flags.value + 1
             }
 
             else -> {}
@@ -134,21 +151,31 @@ class Minesweeper(
     private fun reveal(x: Int, y: Int) {
         if (!initialised) initialise(x, y)
         if (gameOver) return
-        val field = board[y][x].value
+
+        val field = _board[y][x].value
         if (field.isRevealed || field.isFlagged) return
         if (field.value == -1) {
-            board[y][x].value = field.copy(value = DETONATED_BY_PLAYER)
+            _board[y][x].value = field.copy(value = DETONATED_BY_PLAYER)
             for (mc in minesCoords) {
                 if (mc.first == x && mc.second == y) continue
-                val mine = board[mc.second][mc.first].value
-                board[mc.second][mc.first].value = mine.copy(value = DETONATED_BY_MINE)
+                val mine = _board[mc.second][mc.first].value
+                _board[mc.second][mc.first].value = mine.copy(value = DETONATED_BY_MINE)
             }
             gameOver = true
+            onGameEvent(GameEvent.GameLose)
             return
         }
 
-        board[y][x].value = field.copy(isRevealed = true)
+        _board[y][x].value = field.copy(isRevealed = true)
+        revealed++
+        println("AppDebug: revealed $revealed")
 
+        if (revealed == (width * height) - mines) {
+            gameOver = true
+            onGameEvent(GameEvent.GameWin)
+        }
+
+        // Reveal all the fields around, because there's no mine there
         if (field.value == 0) {
             for (zx in -1..1) {
                 for (zy in -1..1) {
@@ -172,12 +199,25 @@ class Minesweeper(
                 if (fx == 0 && fy == 0) continue
                 if (y + fy in 0 until height &&
                     x + fx in 0 until width &&
-                    board[y + fy][x + fx].value.value > -1
+                    _board[y + fy][x + fx].value.value > -1
                 ) {
-                    val field = board[y + fy][x + fx].value
-                    board[y + fy][x + fx].value = field.copy(value = field.value + 1)
+                    val field = _board[y + fy][x + fx].value
+                    _board[y + fy][x + fx].value = field.copy(value = field.value + 1)
                 }
             }
         }
+    }
+
+    private fun reset() {
+        for (r in _board.indices) {
+            for (c in _board[0].indices) {
+                _board[r][c].value = Field()
+            }
+        }
+        minesCoords.clear()
+        _flags.value = 0
+        revealed = 0
+        initialised = false
+        gameOver = false
     }
 }

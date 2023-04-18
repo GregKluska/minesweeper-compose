@@ -21,13 +21,14 @@ fun ScreenUI(
     mines: Int = 10,
     flagMode: Boolean = true,
     setFlagMode: (Boolean) -> Unit = {},
+    onMenuClick: () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
 
     MinesweeperTheme {
         Scaffold(
             modifier = Modifier.background(MaterialTheme.colorScheme.background),
-            topBar = { TopBar() },
+            topBar = { TopBar(onMenuClick = onMenuClick) },
             bottomBar = {
                 BottomBar(
                     flags = flags,
