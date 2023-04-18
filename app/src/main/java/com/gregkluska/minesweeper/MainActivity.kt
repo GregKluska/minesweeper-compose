@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val game = remember { Minesweeper(10, 10, 15) }
+            val game = remember { Minesweeper(10, 10, 11) }
             val board = game.board
             ScreenUI(
                 flags = game.flags,

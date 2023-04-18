@@ -52,6 +52,8 @@ class Minesweeper(
     var flags by mutableStateOf(0)
         private set
 
+    private var initialised: Boolean = false
+
     /**
      * Mine coords, X to Y
      */
@@ -62,8 +64,42 @@ class Minesweeper(
 
     init {
         require(width > 0 && height > 0 && mines > 0 && width * height > mines)
+    }
 
-        val mineShuffle = List(width * height) { if (it < mines) -1 else 0 }.shuffled()
+    private fun reset() {
+        for (r in board.indices) {
+            for (c in board[0].indices) {
+                board[r][c].value = Field()
+            }
+        }
+        minesCoords.clear()
+        flags = 0
+        initialised = false
+    }
+
+    /**
+     * Initialise the board. If both [cx] and [cy] are provided, the mine won't be spawned there
+     */
+    private fun initialise(
+        cx: Int? = null,
+        cy: Int? = null
+    ) {
+        reset()
+
+        var mineShuffle = List(width * height) { if (it < mines) -1 else 0 }.shuffled()
+
+        val cIdx: Int? = if(cx != null && cy != null) {
+            height * cy + cx
+        } else {
+            null
+        }
+
+        cIdx?.let {
+            while(mineShuffle[it] == -1){
+                mineShuffle = mineShuffle.shuffled()
+            }
+        }
+
         for (i in mineShuffle.indices) {
             if (mineShuffle[i] == 0) continue
             val y = i.div(width)
@@ -73,13 +109,17 @@ class Minesweeper(
             updateAdjacentMines(x, y)
         }
         minesCoords.shuffle()
+
+        initialised = true
     }
 
     fun click(row: Int, col: Int) {
+        val x = col.coerceIn(0 until width)
+        val y = row.coerceIn(0 until height)
         if (!flagMode) {
-            reveal(col, row)
+            reveal(x, y)
         } else {
-            flag(col, row)
+            flag(x, y)
         }
     }
 
@@ -90,20 +130,23 @@ class Minesweeper(
 
         val isFlagged = field.isFlagged
 
-       when {
-           isFlagged -> {
-               board[y][x].value = field.copy(isFlagged = false)
-               flags--
-           }
-           !isFlagged && flags < mines -> {
-               board[y][x].value = field.copy(isFlagged = true)
-               flags++
-           }
-           else -> {}
-       }
+        when {
+            isFlagged -> {
+                board[y][x].value = field.copy(isFlagged = false)
+                flags--
+            }
+
+            !isFlagged && flags < mines -> {
+                board[y][x].value = field.copy(isFlagged = true)
+                flags++
+            }
+
+            else -> {}
+        }
     }
 
     private fun reveal(x: Int, y: Int) {
+        if (!initialised) initialise(x, y)
         if (gameOver) return
         val field = board[y][x].value
         if (field.isRevealed || field.isFlagged) return
