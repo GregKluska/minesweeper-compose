@@ -14,10 +14,12 @@ import com.gregkluska.minesweeper.ui.theme.MinesweeperTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar() {
+fun TopBar(
+    onMenuClick: () -> Unit = {}
+) {
     CenterAlignedTopAppBar(
         navigationIcon = {
-            IconButton(onClick = {}) {
+            IconButton(onClick = onMenuClick) {
                 Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
             }
         },
