@@ -7,20 +7,6 @@ import com.gregkluska.minesweeper.Field.Companion.DETONATED_BY_MINE
 import com.gregkluska.minesweeper.Field.Companion.DETONATED_BY_PLAYER
 import com.gregkluska.minesweeper.Field.Companion.MINE
 
-//fun main() {
-//    val game = Minesweeper(10, 10, 10)
-//
-//    while(!game.gameOver) {
-//        game.printGame()
-//        print("X: ")
-//        val x = readLine()!!
-//        println()
-//        print("Y: ")
-//        val y = readLine()!!
-//        game.reveal(x.toInt(), y.toInt())
-//    }
-//}
-
 /**
  * Field date class
  *
@@ -194,27 +180,4 @@ class Minesweeper(
             }
         }
     }
-
-//    fun printGame() {
-//        board.forEachIndexed { y, row ->
-//            row.forEachIndexed { x, num ->
-//                if((x to y) in revealed) {
-//                    print(if (num.value < 0) " X " else " $num ")
-//                } else {
-//                    print(" * ")
-//                }
-//
-//            }
-//            println()
-//        }
-//    }
-//
-//    private fun printBoard() {
-//        board.forEach {
-//            it.forEach {
-//                print(if (it.value < 0) " X " else " ${it.value} ")
-//            }
-//            println()
-//        }
-//    }
 }
