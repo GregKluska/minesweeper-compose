@@ -13,18 +13,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.gregkluska.minesweeper.ui.components.ScreenUI
 import com.gregkluska.minesweeper.ui.theme.MinesweeperTheme
 
-/**
- * TODO:
- * 1) Zooming in/out, investigate recomposition (performance)
- * 2) Win/Lose dialogs
- * 3) Scaffold refactor / Predefined modes
- * 4) Lint and reformatting thing, githooks and leeks dep
- * 5) Unit Tests
- * 6) UI tests
- * 7) Screenshot tests
- * 8) Pipeline
- * 9) Publish
- */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
