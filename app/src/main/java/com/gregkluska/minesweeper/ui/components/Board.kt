@@ -61,7 +61,7 @@ fun Board(
         ) {
             var h = 0
             for (r in fields.indices) {
-                for (c in fields.indices) {
+                for (c in fields[r].indices) {
                     drawRect(
                         color = fieldColors.getColor(
                             light = h.mod(2) == 0,
@@ -103,7 +103,7 @@ fun Board(
 
             // Outline
             for (r in fields.indices) {
-                for (c in fields.indices) {
+                for (c in fields[r].indices) {
                     if (fields[r][c].isRevealed) continue
 
                     val outlineSize = 4
@@ -125,7 +125,7 @@ fun Board(
 
             h = 0
             for (r in fields.indices) {
-                for (c in fields.indices) {
+                for (c in fields[r].indices) {
                     if (!fields[r][c].isRevealed) {
                         drawRect(
                             color = fieldColors.getColor(
