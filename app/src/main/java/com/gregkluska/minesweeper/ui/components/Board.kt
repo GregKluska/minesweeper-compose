@@ -59,13 +59,13 @@ fun Board(
         val boardHeightDp = with(LocalDensity.current) { (fieldSize * rows).toDp() }
 
         val scale = remember { mutableStateOf(1f) }
-        val offset = remember { mutableStateOf(Offset.Zero) }
+        val moveOffset = remember { mutableStateOf(Offset.Zero) }
 
 //        = boardWidth * scale.value
 
         val transformableState = rememberTransformableState { zoomChange, offsetChange, _ ->
 
-            scale.value *= zoomChange
+//            scale.value *= zoomChange
 
             val bw = boardWidth * scale.value
             val sw = min(constraints.maxWidth.toFloat(),boardWidth)
@@ -80,9 +80,9 @@ fun Board(
             val yMin = -bh+sh+yMax
             val yRan = if(yMin<yMax) yMin..yMax else yMax..yMin
 
-            offset.value = Offset(
-                x = (offset.value.x+offsetChange.x).coerceIn(xRan),
-                y = (offset.value.y+offsetChange.y).coerceIn(yRan)
+            moveOffset.value = Offset(
+                x = (moveOffset.value.x+offsetChange.x).coerceIn(xRan),
+                y = (moveOffset.value.y+offsetChange.y).coerceIn(yRan)
             )
         }
 
@@ -93,21 +93,21 @@ fun Board(
                     height = boardHeightDp
                 )
                 .transformable(transformableState)
-                .graphicsLayer(
-                    scaleX = scale.value,
-                    scaleY = scale.value,
-                    translationX = offset.value.x,
-                    translationY = offset.value.y
-                )
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onTap = { offset ->
-                            val x = offset.x.div(fieldSize)
-                            val y = offset.y.div(fieldSize)
+                            val x = (-moveOffset.value.x + offset.x).div(fieldSize)
+                            val y = (-moveOffset.value.y + offset.y).div(fieldSize)
                             onClick(y.toInt(), x.toInt())
                         }
                     )
                 }
+                .graphicsLayer(
+                    scaleX = scale.value,
+                    scaleY = scale.value,
+                    translationX = moveOffset.value.x,
+                    translationY = moveOffset.value.y
+                )
         ) {
             var h = 0
             for (r in fields.indices) {
