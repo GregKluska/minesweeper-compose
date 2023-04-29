@@ -19,9 +19,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             val game = remember {
                 Minesweeper(
-                    width = 40,
-                    height = 10,
-                    mines = 10,
+                    width = 20,
+                    height = 20,
+                    mines = 40,
                     onGameEvent = {
                         when(it) {
                             GameEvent.GameLose -> println("AppDebug: Lost")
@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.padding(paddingValues = paddingValues),
                     fields = board.map { it.map { it.value } },
                     onClick = { row, col ->
+                        println("AppDebug: onclick: row: $row, col: $col")
                         when(flagMode.value) {
                             true -> (game::handleEvent)(UserEvent.ToggleFlag(x = col, y = row))
                             false -> (game::handleEvent)(UserEvent.Reveal(x = col, y = row))
