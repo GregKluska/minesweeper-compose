@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val game = remember {
                 Minesweeper(
-                    width = 20,
+                    width = 40,
                     height = 10,
                     mines = 10,
                     onGameEvent = {
