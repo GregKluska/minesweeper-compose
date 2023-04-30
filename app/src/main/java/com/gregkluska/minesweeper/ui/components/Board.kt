@@ -4,26 +4,34 @@ import android.graphics.Paint
 import android.text.TextPaint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
+import androidx.compose.ui.unit.dp
 import com.gregkluska.minesweeper.Field
 import com.gregkluska.minesweeper.Field.Companion.DETONATED_BY_MINE
 import com.gregkluska.minesweeper.Field.Companion.DETONATED_BY_PLAYER
 import com.gregkluska.minesweeper.ui.canvas.drawFlag
 import com.gregkluska.minesweeper.ui.theme.Orange
+import java.lang.Float.min
 
 
 @Composable
@@ -40,28 +48,66 @@ fun Board(
             .fillMaxWidth()
             .then(modifier)
     ) {
-        val fieldSize = (constraints.maxWidth / fields[0].size).toFloat()
-        val fieldSizeDp = maxWidth / fields[0].size
+        val rows = fields.size.toFloat()
+        val cols = fields[0].size.toFloat()
+
+        val fieldSize: Float = with(LocalDensity.current) { 40.dp.toPx() }
+
+        val boardWidth = fieldSize * cols
+        val boardWidthDp = with(LocalDensity.current) { (fieldSize * cols).toDp() }
+        val boardHeight = fieldSize * rows
+        val boardHeightDp = with(LocalDensity.current) { (fieldSize * rows).toDp() }
+
+        val scale = remember { mutableStateOf(1f) }
+        val moveOffset = remember { mutableStateOf(Offset.Zero) }
+
+
+        val transformableState = rememberTransformableState { zoomChange, offsetChange, _ ->
+            val bw = boardWidth * scale.value
+            val sw = min(constraints.maxWidth.toFloat(),boardWidth)
+            val bh = boardHeight * scale.value
+            val sh = min(constraints.maxHeight.toFloat(),boardHeight)
+
+            val xMax = -sw*(1-scale.value)/2 //984*1-s /2
+            val xMin = -bw+sw+xMax
+            val xRan = if(xMin<xMax) xMin..xMax else xMax..xMin
+
+            val yMax = -sh*(1-scale.value)/2 //984*1-s /2
+            val yMin = -bh+sh+yMax
+            val yRan = if(yMin<yMax) yMin..yMax else yMax..yMin
+
+            moveOffset.value = Offset(
+                x = (moveOffset.value.x+offsetChange.x).coerceIn(xRan),
+                y = (moveOffset.value.y+offsetChange.y).coerceIn(yRan)
+            )
+        }
 
         Canvas(
             modifier = Modifier
                 .size(
-                    width = fieldSizeDp * fields[0].size,
-                    height = fieldSizeDp * fields.size
+                    width = boardWidthDp,
+                    height = boardHeightDp
                 )
+                .transformable(transformableState)
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onTap = { offset ->
-                            val x = offset.x.div(fieldSize)
-                            val y = offset.y.div(fieldSize)
+                            val x = (-moveOffset.value.x + offset.x).div(fieldSize)
+                            val y = (-moveOffset.value.y + offset.y).div(fieldSize)
                             onClick(y.toInt(), x.toInt())
                         }
                     )
-                },
+                }
+                .graphicsLayer(
+                    scaleX = scale.value,
+                    scaleY = scale.value,
+                    translationX = moveOffset.value.x,
+                    translationY = moveOffset.value.y
+                )
         ) {
             var h = 0
             for (r in fields.indices) {
-                for (c in fields.indices) {
+                for (c in fields[r].indices) {
                     drawRect(
                         color = fieldColors.getColor(
                             light = h.mod(2) == 0,
@@ -103,7 +149,7 @@ fun Board(
 
             // Outline
             for (r in fields.indices) {
-                for (c in fields.indices) {
+                for (c in fields[r].indices) {
                     if (fields[r][c].isRevealed) continue
 
                     val outlineSize = 4
@@ -125,7 +171,7 @@ fun Board(
 
             h = 0
             for (r in fields.indices) {
-                for (c in fields.indices) {
+                for (c in fields[r].indices) {
                     if (!fields[r][c].isRevealed) {
                         drawRect(
                             color = fieldColors.getColor(
