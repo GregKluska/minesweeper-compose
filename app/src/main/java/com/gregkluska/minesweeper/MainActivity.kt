@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
                     height = 20,
                     mines = 40,
                     onGameEvent = {
-                        when(it) {
+                        when (it) {
                             GameEvent.GameLose -> println("AppDebug: Lost")
                             GameEvent.GameWin -> println("AppDebug: Win")
                         }
@@ -43,8 +43,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.padding(paddingValues = paddingValues),
                     fields = board.map { it.map { it.value } },
                     onClick = { row, col ->
-                        println("AppDebug: onclick: row: $row, col: $col")
-                        when(flagMode.value) {
+                        when (flagMode.value) {
                             true -> (game::handleEvent)(UserEvent.ToggleFlag(x = col, y = row))
                             false -> (game::handleEvent)(UserEvent.Reveal(x = col, y = row))
                         }
