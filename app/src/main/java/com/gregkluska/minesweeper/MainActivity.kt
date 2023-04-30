@@ -3,69 +3,36 @@ package com.gregkluska.minesweeper
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.gregkluska.minesweeper.ui.component.ScreenUI
-import com.gregkluska.minesweeper.ui.theme.MinesweeperTheme
 
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: GameViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val game = remember {
-                Minesweeper(
-                    width = 20,
-                    height = 20,
-                    mines = 40,
-                    onGameEvent = {
-                        when (it) {
-                            GameEvent.GameLose -> println("AppDebug: Lost")
-                            GameEvent.GameWin -> println("AppDebug: Win")
-                        }
-                    }
-                )
-            }
+            val state = viewModel.state
+            val game = state.value.game
+            val flagMode = state.value.flagMode
             val board = game.board
-            val flagMode = remember { mutableStateOf(false) }
+
             ScreenUI(
                 flags = game.flags.value,
                 mines = game.mines,
-                flagMode = flagMode.value,
-                setFlagMode = { flagMode.value = it },
+                flagMode = flagMode,
+                setFlagMode = viewModel::setFlagMode,
                 onMenuClick = { game.handleEvent(UserEvent.NewGame) }
             ) { paddingValues ->
                 GameScreen(
                     modifier = Modifier.padding(paddingValues = paddingValues),
                     fields = board.map { it.map { it.value } },
-                    onClick = { row, col ->
-                        when (flagMode.value) {
-                            true -> (game::handleEvent)(UserEvent.ToggleFlag(x = col, y = row))
-                            false -> (game::handleEvent)(UserEvent.Reveal(x = col, y = row))
-                        }
-                    }
+                    onClick = viewModel::onClick
                 )
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MinesweeperTheme {
-        Greeting("Android")
     }
 }

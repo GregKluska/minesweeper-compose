@@ -50,7 +50,6 @@ fun GameScreenPreview() {
         GameScreen(
             modifier = Modifier
                 .padding(paddingValues),
-//            state = state,
             fields = state.fields,
             onClick = { _, _ -> }
         )
