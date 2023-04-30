@@ -61,12 +61,8 @@ fun Board(
         val scale = remember { mutableStateOf(1f) }
         val moveOffset = remember { mutableStateOf(Offset.Zero) }
 
-//        = boardWidth * scale.value
 
         val transformableState = rememberTransformableState { zoomChange, offsetChange, _ ->
-
-//            scale.value *= zoomChange
-
             val bw = boardWidth * scale.value
             val sw = min(constraints.maxWidth.toFloat(),boardWidth)
             val bh = boardHeight * scale.value
