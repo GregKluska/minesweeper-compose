@@ -1,6 +1,5 @@
-package com.gregkluska.minesweeper.ui.components
+package com.gregkluska.minesweeper.ui.component.dialog
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,32 +24,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gregkluska.minesweeper.R
-import com.gregkluska.minesweeper.ui.components.GameDialogState.Companion.LoseDialog
-import com.gregkluska.minesweeper.ui.components.GameDialogState.Companion.WinDialog
+import com.gregkluska.minesweeper.core.DialogState
 import com.gregkluska.minesweeper.ui.theme.MinesweeperTheme
 
-data class GameDialogState(
-    @DrawableRes val icon: Int,
-    val time: Int? = null,
-    val highScore: Int? = null
-) {
-    companion object {
-        val WinDialog = GameDialogState(
-            icon = R.drawable.win_emoji,
-            time = 50,
-            highScore = 10
-        )
-
-        val LoseDialog = GameDialogState(
-            icon = R.drawable.lose_emoji,
-            time = null,
-            highScore = 50
-        )
-    }
-}
-
 @Composable
-fun GameDialog(
+fun GameOverDialog(
     icon: Painter,
     time: Int? = null,
     highScore: Int? = null,
@@ -126,11 +104,11 @@ fun GameDialog(
 @Preview
 @Composable
 private fun GameDialogPreviewWin() {
-    val dialog = WinDialog
+    val dialog = DialogState.GameWon(95, null)
 
     MinesweeperTheme {
         Box(modifier = Modifier.fillMaxSize()) {
-            GameDialog(
+            GameOverDialog(
                 icon = painterResource(id = dialog.icon),
                 time = dialog.time,
                 highScore = dialog.highScore,
@@ -143,11 +121,11 @@ private fun GameDialogPreviewWin() {
 @Preview
 @Composable
 private fun GameDialogPreviewLose() {
-    val dialog = LoseDialog
+    val dialog = DialogState.GameLost(55)
 
     MinesweeperTheme {
         Box(modifier = Modifier.fillMaxSize()) {
-            GameDialog(
+            GameOverDialog(
                 icon = painterResource(id = dialog.icon),
                 time = dialog.time,
                 highScore = dialog.highScore,
