@@ -8,8 +8,8 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
-import com.gregkluska.minesweeper.ui.components.Board
-import com.gregkluska.minesweeper.ui.components.ScreenUI
+import com.gregkluska.minesweeper.ui.component.Board
+import com.gregkluska.minesweeper.ui.component.ScreenUI
 
 data class GameScreenState(
     val fields: List<List<Field>>

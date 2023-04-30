@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper.ui.components
+package com.gregkluska.minesweeper.ui.component
 
 import android.graphics.Paint
 import android.text.TextPaint

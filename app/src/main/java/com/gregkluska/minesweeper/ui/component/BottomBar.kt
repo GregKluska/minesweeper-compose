@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper.ui.components
+package com.gregkluska.minesweeper.ui.component
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Flag
