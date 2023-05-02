@@ -33,8 +33,12 @@ class GameViewModel() : ViewModel() {
 
     private fun onGameEvent(event: GameEvent) {
         when (event) {
-            GameEvent.GameLose -> TODO()
-            GameEvent.GameWin -> TODO()
+            GameEvent.GameLose -> {
+                addGameOverDialog(false)
+            }
+            GameEvent.GameWin -> {
+                addGameOverDialog(true)
+            }
         }
     }
 
@@ -50,6 +54,32 @@ class GameViewModel() : ViewModel() {
             true -> (viewModelState.value.game::handleEvent)(UserEvent.ToggleFlag(x = col, y = row))
             false -> (viewModelState.value.game::handleEvent)(UserEvent.Reveal(x = col, y = row))
         }
+    }
+
+    private fun addGameOverDialog(win: Boolean) {
+        val dialogQueue = viewModelState.value.dialogQueue
+        val dialog = if(win) {
+            DialogState.GameWon(
+                time = 60, highScore = null
+            )
+        } else {
+            DialogState.GameLost(
+                highScore = null
+            )
+        }
+        dialogQueue.add(dialog)
+        viewModelState.value = viewModelState.value.copy(dialogQueue = dialogQueue)
+    }
+
+    fun dismissDialog() {
+        val dialogQueue = viewModelState.value.dialogQueue
+        dialogQueue.poll()
+        viewModelState.value = viewModelState.value.copy(dialogQueue = dialogQueue)
+    }
+
+    fun tryAgain() {
+        viewModelState.value.game.handleEvent(UserEvent.NewGame)
+        dismissDialog()
     }
 
 }
