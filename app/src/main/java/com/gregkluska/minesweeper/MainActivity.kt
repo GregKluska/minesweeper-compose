@@ -6,7 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import com.gregkluska.minesweeper.core.DialogState
+import com.gregkluska.minesweeper.core.GameDialogState
 import com.gregkluska.minesweeper.ui.component.ScreenUI
+import com.gregkluska.minesweeper.ui.component.dialog.GameOverDialog
 
 class MainActivity : ComponentActivity() {
 
@@ -27,6 +31,20 @@ class MainActivity : ComponentActivity() {
                 setFlagMode = viewModel::setFlagMode,
                 onMenuClick = { game.handleEvent(UserEvent.NewGame) }
             ) { paddingValues ->
+                state.value.dialogQueue.peek()?.let {
+                    when(it) {
+                        is GameDialogState -> {
+                            GameOverDialog(
+                                icon = painterResource(id = it.icon),
+                                time = it.time,
+                                highScore = it.highScore,
+                                onDismissRequest = viewModel::dismissDialog,
+                                onTryAgainClick = viewModel::tryAgain
+                            )
+                        }
+                    }
+                }
+
                 GameScreen(
                     modifier = Modifier.padding(paddingValues = paddingValues),
                     fields = board.map { it.map { it.value } },
