@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
+import com.gregkluska.minesweeper.GameEvent
 import com.gregkluska.minesweeper.ui.theme.MinesweeperTheme
 
 @Composable
@@ -18,7 +19,7 @@ fun BottomBar(
     flags: Int = 0,
     mines: Int = 10,
     flagMode: Boolean = true,
-    setFlagMode: (Boolean) -> Unit = {},
+    setMode: (GameEvent.FlagMode) -> Unit = {},
 ) {
     NavigationBar(
         containerColor = Color.Transparent
@@ -28,13 +29,13 @@ fun BottomBar(
             icon = { Icon(Icons.Default.LocationSearching, contentDescription = "Reveal") },
             label = { Text(text = "Reveal") },
             selected = !flagMode,
-            onClick = { setFlagMode(false) }
+            onClick = { setMode(GameEvent.FlagMode(false)) }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.Flag, contentDescription = "Flag") },
             label = { Text(text = "Flag ($flags/$mines)") },
             selected = flagMode,
-            onClick = { setFlagMode(true) }
+            onClick = { setMode(GameEvent.FlagMode(true)) }
         )
     }
 }

@@ -19,7 +19,7 @@ data class GameScreenState(
 fun GameScreen(
     modifier: Modifier = Modifier,
     fields: List<List<Field>>,
-    onClick: (row: Int, col: Int) -> Unit,
+    onClick: (GameEvent.Click) -> Unit,
 ) {
     Surface(
         modifier = Modifier
@@ -51,7 +51,7 @@ fun GameScreenPreview() {
             modifier = Modifier
                 .padding(paddingValues),
             fields = state.fields,
-            onClick = { _, _ -> }
+            onClick = {}
         )
     }
 }

@@ -13,52 +13,62 @@ data class GameState(
     val dialogQueue: Queue<DialogState>
 )
 
+sealed interface GameEvent {
+    data class Click(val row: Int, val col: Int) : GameEvent
+    data class ShowGameOverDialog(val state: Minesweeper.State.GameOver) : GameEvent
+    data class FlagMode(val enable: Boolean): GameEvent
+    object TryAgain : GameEvent
+    object DismissDialog : GameEvent
+}
+
 class GameViewModel() : ViewModel() {
 
-    private val viewModelState = mutableStateOf(
+    private val viewModelGameState = mutableStateOf(
         GameState(
             game = Minesweeper(
                 width = 10,
                 height = 10,
                 mines = 10,
-                onGameEvent = this::onGameEvent
             ),
             flagMode = false,
             dialogQueue = LinkedList()
         )
     )
 
-    val state: State<GameState>
-        get() = viewModelState
+    val gameState: State<GameState>
+        get() = viewModelGameState
 
-    private fun onGameEvent(event: GameEvent) {
+    fun handleEvent(event: GameEvent) {
         when (event) {
-            GameEvent.GameLose -> {
-                addGameOverDialog(false)
-            }
-            GameEvent.GameWin -> {
-                addGameOverDialog(true)
-            }
+            is GameEvent.Click -> handleClick(event.row, event.col)
+            is GameEvent.ShowGameOverDialog -> addGameOverDialog(event.state)
+            is GameEvent.FlagMode -> setFlagMode(event.enable)
+            GameEvent.DismissDialog -> removeHeadDialog()
+            GameEvent.TryAgain -> tryAgain()
+        }
+
+    }
+
+    private fun setFlagMode(flagMode: Boolean) {
+        viewModelGameState.value = viewModelGameState.value.copy(flagMode = flagMode)
+    }
+
+    private fun handleClick(row: Int, col: Int) {
+        when (viewModelGameState.value.flagMode) {
+            true -> (viewModelGameState.value.game::handleEvent)(
+                Minesweeper.Event.ToggleFlag(x = col, y = row)
+            )
+
+            false -> (viewModelGameState.value.game::handleEvent)(
+                Minesweeper.Event.Reveal(x = col, y = row)
+            )
         }
     }
 
-    fun setFlagMode(flagMode: Boolean) {
-        println("appdebug: setflagmode to $flagMode")
-        viewModelState.value = viewModelState.value.copy(flagMode = flagMode)
-        println(viewModelState.value)
-        println(state.value)
-    }
+    private fun addGameOverDialog(state: Minesweeper.State.GameOver) {
+        val dialogQueue = viewModelGameState.value.dialogQueue
 
-    fun onClick(row: Int, col: Int) {
-        when (viewModelState.value.flagMode) {
-            true -> (viewModelState.value.game::handleEvent)(UserEvent.ToggleFlag(x = col, y = row))
-            false -> (viewModelState.value.game::handleEvent)(UserEvent.Reveal(x = col, y = row))
-        }
-    }
-
-    private fun addGameOverDialog(win: Boolean) {
-        val dialogQueue = viewModelState.value.dialogQueue
-        val dialog = if(win) {
+        val dialog = if (state is Minesweeper.State.Win) {
             DialogState.GameWon(
                 time = 60, highScore = null
             )
@@ -68,18 +78,24 @@ class GameViewModel() : ViewModel() {
             )
         }
         dialogQueue.add(dialog)
-        viewModelState.value = viewModelState.value.copy(dialogQueue = dialogQueue)
+
+        // Force recomposition
+        viewModelGameState.value = viewModelGameState.value.copy(dialogQueue = LinkedList())
+        viewModelGameState.value = viewModelGameState.value.copy(dialogQueue = dialogQueue)
     }
 
-    fun dismissDialog() {
-        val dialogQueue = viewModelState.value.dialogQueue
+    private fun removeHeadDialog() {
+        val dialogQueue = viewModelGameState.value.dialogQueue
         dialogQueue.poll()
-        viewModelState.value = viewModelState.value.copy(dialogQueue = dialogQueue)
+
+        //Force recomposition
+        viewModelGameState.value = viewModelGameState.value.copy(dialogQueue = LinkedList())
+        viewModelGameState.value = viewModelGameState.value.copy(dialogQueue = dialogQueue)
     }
 
-    fun tryAgain() {
-        viewModelState.value.game.handleEvent(UserEvent.NewGame)
-        dismissDialog()
+    private fun tryAgain() {
+        viewModelGameState.value.game.handleEvent(Minesweeper.Event.NewGame)
+        removeHeadDialog()
     }
 
 }
