@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper.ui.components
+package com.gregkluska.minesweeper.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
+import com.gregkluska.minesweeper.GameEvent
 import com.gregkluska.minesweeper.ui.theme.MinesweeperTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -20,7 +21,7 @@ fun ScreenUI(
     flags: Int = 0,
     mines: Int = 10,
     flagMode: Boolean = true,
-    setFlagMode: (Boolean) -> Unit = {},
+    setMode: (GameEvent.FlagMode) -> Unit = {},
     onMenuClick: () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -34,7 +35,7 @@ fun ScreenUI(
                     flags = flags,
                     mines = mines,
                     flagMode = flagMode,
-                    setFlagMode = setFlagMode
+                    setMode = setMode
                 )
             },
             floatingActionButton = {},

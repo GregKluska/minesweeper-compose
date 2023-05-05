@@ -8,8 +8,8 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
-import com.gregkluska.minesweeper.ui.components.Board
-import com.gregkluska.minesweeper.ui.components.ScreenUI
+import com.gregkluska.minesweeper.ui.component.Board
+import com.gregkluska.minesweeper.ui.component.ScreenUI
 
 data class GameScreenState(
     val fields: List<List<Field>>
@@ -19,7 +19,7 @@ data class GameScreenState(
 fun GameScreen(
     modifier: Modifier = Modifier,
     fields: List<List<Field>>,
-    onClick: (row: Int, col: Int) -> Unit,
+    onClick: (GameEvent.Click) -> Unit,
 ) {
     Surface(
         modifier = Modifier
@@ -50,9 +50,8 @@ fun GameScreenPreview() {
         GameScreen(
             modifier = Modifier
                 .padding(paddingValues),
-//            state = state,
             fields = state.fields,
-            onClick = { _, _ -> }
+            onClick = {}
         )
     }
 }

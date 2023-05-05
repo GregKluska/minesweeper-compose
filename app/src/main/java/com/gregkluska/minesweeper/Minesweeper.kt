@@ -1,21 +1,9 @@
 package com.gregkluska.minesweeper
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.gregkluska.minesweeper.Field.Companion.DETONATED_BY_MINE
 import com.gregkluska.minesweeper.Field.Companion.DETONATED_BY_PLAYER
 import com.gregkluska.minesweeper.Field.Companion.MINE
-
-sealed class UserEvent {
-    data class Reveal(val x: Int, val y: Int) : UserEvent()
-    data class ToggleFlag(val x: Int, val y: Int) : UserEvent()
-    object NewGame : UserEvent()
-}
-
-sealed class GameEvent {
-    object GameLose : GameEvent()
-    object GameWin : GameEvent()
-}
 
 /**
  * Field date class
@@ -42,50 +30,64 @@ class Minesweeper(
     private val width: Int,
     private val height: Int,
     val mines: Int,
-    private val onGameEvent: (GameEvent) -> Unit
 ) {
+
+    sealed interface Event {
+        data class Reveal(val x: Int, val y: Int) : Event
+        data class ToggleFlag(val x: Int, val y: Int) : Event
+        object NewGame : Event
+    }
+
+    sealed interface State {
+        sealed interface GameOver
+        object Initial : State
+        data class Start(val startTime: Long) : State
+        data class Win(val time: Long) : State, GameOver
+        object Lose : State, GameOver
+    }
 
     /**
      * TODO: Docs
      */
-    val board: List<List<State<Field>>>
+    val board: List<List<androidx.compose.runtime.State<Field>>>
         get() = _board
 
     /**
      * TODO: Docs
      */
-    val flags: State<Int>
+    val flags: androidx.compose.runtime.State<Int>
         get() = _flags
 
+    val state: androidx.compose.runtime.State<State>
+        get() = _state
 
     private val _board = List(height) { List(width) { mutableStateOf(Field()) } }
     private val _flags = mutableStateOf(0)
+    private val _state = mutableStateOf<State>(State.Initial)
     private val minesCoords = mutableListOf<Pair<Int, Int>>()
-    private var initialised: Boolean = false
-    private var gameOver = false
     private var revealed = 0
 
     init {
         require(width > 0 && height > 0 && mines > 0 && width * height > mines)
     }
 
-    fun handleEvent(userEvent: UserEvent) {
-        when (userEvent) {
-            is UserEvent.Reveal -> {
+    fun handleEvent(event: Event) {
+        when (event) {
+            is Event.Reveal -> {
                 reveal(
-                    x = userEvent.x.coerceIn(0 until width),
-                    y = userEvent.y.coerceIn(0 until height)
+                    x = event.x.coerceIn(0 until width),
+                    y = event.y.coerceIn(0 until height)
                 )
             }
 
-            is UserEvent.ToggleFlag -> {
+            is Event.ToggleFlag -> {
                 toggleFlag(
-                    x = userEvent.x.coerceIn(0 until width),
-                    y = userEvent.y.coerceIn(0 until height)
+                    x = event.x.coerceIn(0 until width),
+                    y = event.y.coerceIn(0 until height)
                 )
             }
 
-            UserEvent.NewGame -> reset() // Test it
+            Event.NewGame -> reset()
         }
     }
 
@@ -96,8 +98,6 @@ class Minesweeper(
         cx: Int? = null,
         cy: Int? = null
     ) {
-//        reset()
-
         var mineShuffle = List(width * height) { if (it < mines) -1 else 0 }.shuffled()
 
         val cIdx: Int? = if (cx != null && cy != null) {
@@ -123,11 +123,11 @@ class Minesweeper(
         }
         minesCoords.shuffle()
 
-        initialised = true
+        _state.value = State.Start(startTime = System.currentTimeMillis())
     }
 
     private fun toggleFlag(x: Int, y: Int) {
-        if (gameOver) return
+        if (_state.value is State.GameOver) return
         val field = _board[y][x].value
         if (field.isRevealed) return
 
@@ -149,8 +149,8 @@ class Minesweeper(
     }
 
     private fun reveal(x: Int, y: Int) {
-        if (!initialised) initialise(x, y)
-        if (gameOver) return
+        if (_state.value is State.Initial) initialise(x, y)
+        if (_state.value is State.GameOver) return
 
         val field = _board[y][x].value
         if (field.isRevealed || field.isFlagged) return
@@ -161,18 +161,16 @@ class Minesweeper(
                 val mine = _board[mc.second][mc.first].value
                 _board[mc.second][mc.first].value = mine.copy(value = DETONATED_BY_MINE)
             }
-            gameOver = true
-            onGameEvent(GameEvent.GameLose)
+            _state.value = State.Lose
             return
         }
 
         _board[y][x].value = field.copy(isRevealed = true)
         revealed++
-        println("AppDebug: revealed $revealed")
 
         if (revealed == (width * height) - mines) {
-            gameOver = true
-            onGameEvent(GameEvent.GameWin)
+            val startTime = (_state.value as State.Start).startTime //Safe check
+            _state.value = State.Win((System.currentTimeMillis() - startTime) / 1000)
         }
 
         // Reveal all the fields around, because there's no mine there
@@ -217,7 +215,6 @@ class Minesweeper(
         minesCoords.clear()
         _flags.value = 0
         revealed = 0
-        initialised = false
-        gameOver = false
+        _state.value = State.Initial
     }
 }
