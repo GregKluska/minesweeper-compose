@@ -1,6 +1,12 @@
 package com.gregkluska.minesweeper
 
+import android.content.Context
+import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -21,6 +27,16 @@ import com.gregkluska.minesweeper.ui.component.dialog.GameOverDialog
 class MainActivity : ComponentActivity() {
 
     private val viewModel: GameViewModel by viewModels()
+
+    // Get Vibrator service
+    private val vibrator: Vibrator by lazy {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            (getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,10 +71,15 @@ class MainActivity : ComponentActivity() {
                 LaunchedEffect(game.state.value) {
                     game.state.value.let { gameState ->
                         if(gameState in setOf(Minesweeper.State.Start, Minesweeper.State.Lose)) {
+                            vibrator.vibrate(VibrationEffect.createOneShot(300, VibrationEffect.DEFAULT_AMPLITUDE))
                             shakeOffset.animateTo(Offset.Zero, shakeKeyframes)
                         }
 
                         if(gameState is Minesweeper.State.GameOver) {
+                            if(gameState is Minesweeper.State.Lose) {
+                                val mp = MediaPlayer.create(this@MainActivity, R.raw.lose)
+                                mp.start()
+                            }
                             (viewModel::handleEvent)(GameEvent.ShowGameOverDialog(gameState))
                         }
                     }
