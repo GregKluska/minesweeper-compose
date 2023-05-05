@@ -76,9 +76,15 @@ class MainActivity : ComponentActivity() {
                         }
 
                         if(gameState is Minesweeper.State.GameOver) {
-                            if(gameState is Minesweeper.State.Lose) {
-                                val mp = MediaPlayer.create(this@MainActivity, R.raw.lose)
-                                mp.start()
+                            when(gameState) {
+                                Minesweeper.State.Lose -> {
+                                    val mp = MediaPlayer.create(this@MainActivity, R.raw.lose)
+                                    mp.start()
+                                }
+                                Minesweeper.State.Win -> {
+                                    val mp = MediaPlayer.create(this@MainActivity, R.raw.win)
+                                    mp.start()
+                                }
                             }
                             (viewModel::handleEvent)(GameEvent.ShowGameOverDialog(gameState))
                         }
