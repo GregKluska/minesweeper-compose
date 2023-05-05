@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper.ui.components
+package com.gregkluska.minesweeper.ui.component
 
 import android.graphics.Paint
 import android.text.TextPaint
@@ -29,7 +29,9 @@ import androidx.compose.ui.unit.dp
 import com.gregkluska.minesweeper.Field
 import com.gregkluska.minesweeper.Field.Companion.DETONATED_BY_MINE
 import com.gregkluska.minesweeper.Field.Companion.DETONATED_BY_PLAYER
+import com.gregkluska.minesweeper.GameEvent
 import com.gregkluska.minesweeper.ui.canvas.drawFlag
+import com.gregkluska.minesweeper.ui.theme.MinesweeperTheme
 import com.gregkluska.minesweeper.ui.theme.Orange
 import java.lang.Float.min
 
@@ -41,7 +43,7 @@ fun Board(
     fieldColors: FieldColors = fieldColors(),
     detonatedColor: Color = MaterialTheme.colorScheme.error,
     detonatedColorAlt: Color = MaterialTheme.colorScheme.errorContainer,
-    onClick: (row: Int, col: Int) -> Unit = { _, _ -> },
+    onClick: (GameEvent.Click) -> Unit = {},
 ) {
     BoxWithConstraints(
         modifier = Modifier
@@ -64,21 +66,21 @@ fun Board(
 
         val transformableState = rememberTransformableState { zoomChange, offsetChange, _ ->
             val bw = boardWidth * scale.value
-            val sw = min(constraints.maxWidth.toFloat(),boardWidth)
+            val sw = min(constraints.maxWidth.toFloat(), boardWidth)
             val bh = boardHeight * scale.value
-            val sh = min(constraints.maxHeight.toFloat(),boardHeight)
+            val sh = min(constraints.maxHeight.toFloat(), boardHeight)
 
-            val xMax = -sw*(1-scale.value)/2 //984*1-s /2
-            val xMin = -bw+sw+xMax
-            val xRan = if(xMin<xMax) xMin..xMax else xMax..xMin
+            val xMax = -sw * (1 - scale.value) / 2 //984*1-s /2
+            val xMin = -bw + sw + xMax
+            val xRan = if (xMin < xMax) xMin..xMax else xMax..xMin
 
-            val yMax = -sh*(1-scale.value)/2 //984*1-s /2
-            val yMin = -bh+sh+yMax
-            val yRan = if(yMin<yMax) yMin..yMax else yMax..yMin
+            val yMax = -sh * (1 - scale.value) / 2 //984*1-s /2
+            val yMin = -bh + sh + yMax
+            val yRan = if (yMin < yMax) yMin..yMax else yMax..yMin
 
             moveOffset.value = Offset(
-                x = (moveOffset.value.x+offsetChange.x).coerceIn(xRan),
-                y = (moveOffset.value.y+offsetChange.y).coerceIn(yRan)
+                x = (moveOffset.value.x + offsetChange.x).coerceIn(xRan),
+                y = (moveOffset.value.y + offsetChange.y).coerceIn(yRan)
             )
         }
 
@@ -94,7 +96,7 @@ fun Board(
                         onTap = { offset ->
                             val x = (-moveOffset.value.x + offset.x).div(fieldSize)
                             val y = (-moveOffset.value.y + offset.y).div(fieldSize)
-                            onClick(y.toInt(), x.toInt())
+                            onClick(GameEvent.Click(y.toInt(), x.toInt()))
                         }
                     )
                 }
@@ -297,7 +299,9 @@ fun BoardPreview() {
 @Preview(wallpaper = Wallpapers.YELLOW_DOMINATED_EXAMPLE)
 @Composable
 fun BoardPreview2() {
-    Board(
-        fields = List(11) { List(11) { Field() } }
-    )
+    MinesweeperTheme {
+        Board(
+            fields = List(11) { List(11) { Field() } }
+        )
+    }
 }
