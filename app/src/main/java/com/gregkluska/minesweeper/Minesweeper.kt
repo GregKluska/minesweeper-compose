@@ -41,8 +41,8 @@ class Minesweeper(
     sealed interface State {
         sealed interface GameOver
         object Initial : State
-        object Start : State
-        object Win : State, GameOver
+        data class Start(val startTime: Long) : State
+        data class Win(val time: Long) : State, GameOver
         object Lose : State, GameOver
     }
 
@@ -123,7 +123,7 @@ class Minesweeper(
         }
         minesCoords.shuffle()
 
-        _state.value = State.Start
+        _state.value = State.Start(startTime = System.currentTimeMillis())
     }
 
     private fun toggleFlag(x: Int, y: Int) {
@@ -167,10 +167,10 @@ class Minesweeper(
 
         _board[y][x].value = field.copy(isRevealed = true)
         revealed++
-        println("AppDebug: revealed $revealed")
 
         if (revealed == (width * height) - mines) {
-            _state.value = State.Win
+            val startTime = (_state.value as State.Start).startTime //Safe check
+            _state.value = State.Win((System.currentTimeMillis() - startTime) / 1000)
         }
 
         // Reveal all the fields around, because there's no mine there
