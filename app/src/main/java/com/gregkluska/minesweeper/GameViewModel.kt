@@ -70,7 +70,7 @@ class GameViewModel() : ViewModel() {
 
         val dialog = if (state is Minesweeper.State.Win) {
             DialogState.GameWon(
-                time = 60, highScore = null
+                time = state.time.toInt(), highScore = null
             )
         } else {
             DialogState.GameLost(

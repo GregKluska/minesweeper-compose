@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
 
                 LaunchedEffect(game.state.value) {
                     game.state.value.let { gameState ->
-                        if(gameState in setOf(Minesweeper.State.Start, Minesweeper.State.Lose)) {
+                        if(gameState in setOf(Minesweeper.State::Start, Minesweeper.State.Lose)) {
                             vibrator.vibrate(VibrationEffect.createOneShot(300, VibrationEffect.DEFAULT_AMPLITUDE))
                             shakeOffset.animateTo(Offset.Zero, shakeKeyframes)
                         }
@@ -81,7 +81,7 @@ class MainActivity : ComponentActivity() {
                                     val mp = MediaPlayer.create(this@MainActivity, R.raw.lose)
                                     mp.start()
                                 }
-                                Minesweeper.State.Win -> {
+                                is Minesweeper.State.Win -> {
                                     val mp = MediaPlayer.create(this@MainActivity, R.raw.win)
                                     mp.start()
                                 }
