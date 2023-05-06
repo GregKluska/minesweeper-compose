@@ -26,8 +26,8 @@ class GameViewModel() : ViewModel() {
     private val viewModelGameState = mutableStateOf(
         GameState(
             game = Minesweeper(
-                width = 20,
-                height = 40,
+                width = 10,
+                height = 10,
                 mines = 10,
             ),
             flagMode = false,
