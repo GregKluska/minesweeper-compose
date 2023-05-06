@@ -33,7 +33,6 @@ import com.gregkluska.minesweeper.GameEvent
 import com.gregkluska.minesweeper.ui.canvas.drawFlag
 import com.gregkluska.minesweeper.ui.theme.MinesweeperTheme
 import com.gregkluska.minesweeper.ui.theme.Orange
-import java.lang.Float.min
 
 
 @Composable
@@ -65,15 +64,21 @@ fun Board(
 
 
         val transformableState = rememberTransformableState { zoomChange, offsetChange, _ ->
+            // scaled board width (if zoom is enabled)
             val bw = boardWidth * scale.value
-            val sw = min(constraints.maxWidth.toFloat(), boardWidth)
+            // the board width that can fit on the screen
+            val sw = bw.coerceAtMost(constraints.maxWidth.toFloat())
+            // scaled board height (if zoom is enabled)
             val bh = boardHeight * scale.value
-            val sh = min(constraints.maxHeight.toFloat(), boardHeight)
+            // the board height that can fit on the screen
+            val sh = bh.coerceAtMost(constraints.maxHeight.toFloat())
 
+            // Some math to figure out where the border is
             val xMax = -sw * (1 - scale.value) / 2 //984*1-s /2
             val xMin = -bw + sw + xMax
             val xRan = if (xMin < xMax) xMin..xMax else xMax..xMin
 
+            // Some math to figure out where the border is
             val yMax = -sh * (1 - scale.value) / 2 //984*1-s /2
             val yMin = -bh + sh + yMax
             val yRan = if (yMin < yMax) yMin..yMax else yMax..yMin
