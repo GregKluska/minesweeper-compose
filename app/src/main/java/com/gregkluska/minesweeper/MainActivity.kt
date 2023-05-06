@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
 
                 LaunchedEffect(game.state.value) {
                     game.state.value.let { gameState ->
-                        if(gameState in setOf(Minesweeper.State::Start, Minesweeper.State.Lose)) {
+                        if(gameState is Minesweeper.State.Start || gameState is Minesweeper.State.Lose) {
                             vibrator.vibrate(VibrationEffect.createOneShot(300, VibrationEffect.DEFAULT_AMPLITUDE))
                             shakeOffset.animateTo(Offset.Zero, shakeKeyframes)
                         }
