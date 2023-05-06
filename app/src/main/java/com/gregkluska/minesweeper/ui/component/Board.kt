@@ -52,16 +52,27 @@ fun Board(
         val rows = fields.size.toFloat()
         val cols = fields[0].size.toFloat()
 
-        val fieldSize: Float = with(LocalDensity.current) { 40.dp.toPx() }
+        val fieldSize: Float = with(LocalDensity.current) { 32.dp.toPx() }
 
         val boardWidth = fieldSize * cols
         val boardWidthDp = with(LocalDensity.current) { (fieldSize * cols).toDp() }
         val boardHeight = fieldSize * rows
         val boardHeightDp = with(LocalDensity.current) { (fieldSize * rows).toDp() }
 
-        val scale = remember { mutableStateOf(1f) }
-        val moveOffset = remember { mutableStateOf(Offset.Zero) }
+        val scale = remember { mutableStateOf(1f) } // Disabled for now.
 
+        // Center the board if fieldSize * fields[0].size < screen size
+        val center = boardWidth < constraints.maxWidth
+        val initialOffset = (constraints.maxWidth - boardWidth) / 2
+        val moveOffset = remember {
+            mutableStateOf(
+                if (center) {
+                    Offset(initialOffset, 0f)
+                } else {
+                    Offset.Zero
+                }
+            )
+        }
 
         val transformableState = rememberTransformableState { zoomChange, offsetChange, _ ->
             // scaled board width (if zoom is enabled)
@@ -89,13 +100,19 @@ fun Board(
             )
         }
 
+        val transformableModifier = if (center) {
+            Modifier
+        } else {
+            Modifier.transformable(transformableState)
+        }
+
         Canvas(
             modifier = Modifier
                 .size(
                     width = boardWidthDp,
                     height = boardHeightDp
                 )
-                .transformable(transformableState)
+                .then(transformableModifier)
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onTap = { offset ->
@@ -161,6 +178,9 @@ fun Board(
 
                     val outlineSize = 4
 
+                    val ow = if(c == 0) outlineSize else 0
+                    val oh = if(r == 0) outlineSize else 0
+
                     // This is to not draw outline at right and bottom sides
                     val sw = if (c + 1 == fields[0].size) outlineSize / 2 else outlineSize
                     val sh = if (r + 1 == fields.size) outlineSize / 2 else outlineSize
@@ -168,10 +188,10 @@ fun Board(
                     drawRect(
                         color = fieldColors.outlineColor,
                         topLeft = Offset(
-                            x = c * fieldSize - outlineSize,
-                            y = r * fieldSize - outlineSize
+                            x = c * fieldSize - outlineSize + ow,
+                            y = r * fieldSize - outlineSize + oh
                         ),
-                        size = Size(fieldSize + (sw * 2), fieldSize + (sh * 2))
+                        size = Size(fieldSize + (sw * 2) - ow, fieldSize + (sh * 2) - oh)
                     )
                 }
             }
