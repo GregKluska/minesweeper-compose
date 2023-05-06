@@ -101,7 +101,7 @@ class Minesweeper(
         var mineShuffle = List(width * height) { if (it < mines) -1 else 0 }.shuffled()
 
         val cIdx: Int? = if (cx != null && cy != null) {
-            height * cy + cx
+            width * cy + cx
         } else {
             null
         }
