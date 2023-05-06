@@ -3,8 +3,8 @@ package com.gregkluska.minesweeper.presentation.ui.gamescreen
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.gregkluska.minesweeper.core.Minesweeper
 import com.gregkluska.minesweeper.core.DialogState
+import com.gregkluska.minesweeper.core.Minesweeper
 import java.util.LinkedList
 import java.util.Queue
 
@@ -17,7 +17,7 @@ data class GameState(
 sealed interface GameEvent {
     data class Click(val row: Int, val col: Int) : GameEvent
     data class ShowGameOverDialog(val state: Minesweeper.State.GameOver) : GameEvent
-    data class FlagMode(val enable: Boolean): GameEvent
+    data class FlagMode(val enable: Boolean) : GameEvent
     object TryAgain : GameEvent
     object DismissDialog : GameEvent
 }
@@ -67,6 +67,11 @@ class GameViewModel() : ViewModel() {
         }
     }
 
+    private fun tryAgain() {
+        viewModelState.value.game.handleEvent(Minesweeper.Event.NewGame)
+        removeHeadDialog()
+    }
+
     private fun addGameOverDialog(state: Minesweeper.State.GameOver) {
         val dialogQueue = viewModelState.value.dialogQueue
 
@@ -96,10 +101,4 @@ class GameViewModel() : ViewModel() {
         viewModelState.value = viewModelState.value.copy(dialogQueue = dialogQueue)
         println("AppDebug: queue " + viewModelState.value.dialogQueue)
     }
-
-    private fun tryAgain() {
-        viewModelState.value.game.handleEvent(Minesweeper.Event.NewGame)
-        removeHeadDialog()
-    }
-
 }

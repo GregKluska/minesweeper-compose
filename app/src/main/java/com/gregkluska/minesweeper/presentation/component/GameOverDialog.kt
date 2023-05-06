@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper.presentation.component.dialog
+package com.gregkluska.minesweeper.presentation.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
