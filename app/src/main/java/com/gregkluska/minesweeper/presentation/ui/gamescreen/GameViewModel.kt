@@ -1,8 +1,9 @@
-package com.gregkluska.minesweeper
+package com.gregkluska.minesweeper.presentation.ui.gamescreen
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.gregkluska.minesweeper.core.Minesweeper
 import com.gregkluska.minesweeper.core.DialogState
 import java.util.LinkedList
 import java.util.Queue

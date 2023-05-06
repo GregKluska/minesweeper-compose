@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper.ui.theme
+package com.gregkluska.minesweeper.presentation.theme
 
 import android.app.Activity
 import android.os.Build

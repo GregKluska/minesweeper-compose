@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper.ui.canvas
+package com.gregkluska.minesweeper.presentation.canvas
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size

@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper.ui.component
+package com.gregkluska.minesweeper.presentation.component
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -10,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
-import com.gregkluska.minesweeper.ui.theme.MinesweeperTheme
+import com.gregkluska.minesweeper.presentation.theme.MinesweeperTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

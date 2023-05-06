@@ -19,10 +19,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import com.gregkluska.minesweeper.core.GameDialogState
-import com.gregkluska.minesweeper.ui.animation.Animatable
-import com.gregkluska.minesweeper.ui.animation.shakeKeyframes
-import com.gregkluska.minesweeper.ui.component.ScreenUI
-import com.gregkluska.minesweeper.ui.component.dialog.GameOverDialog
+import com.gregkluska.minesweeper.core.Minesweeper
+import com.gregkluska.minesweeper.presentation.animation.Animatable
+import com.gregkluska.minesweeper.presentation.animation.shakeKeyframes
+import com.gregkluska.minesweeper.presentation.component.ScreenUI
+import com.gregkluska.minesweeper.presentation.component.dialog.GameOverDialog
+import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameEvent
+import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameScreen
+import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameViewModel
 
 class MainActivity : ComponentActivity() {
 

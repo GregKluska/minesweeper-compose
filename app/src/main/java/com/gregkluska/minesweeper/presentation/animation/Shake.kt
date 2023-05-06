@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper.ui.animation
+package com.gregkluska.minesweeper.presentation.animation
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.CubicBezierEasing
