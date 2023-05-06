@@ -1,16 +1,16 @@
 package com.gregkluska.minesweeper
 
 import android.content.Context
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
+import androidx.annotation.RawRes
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.gregkluska.minesweeper.core.Screen
 import com.gregkluska.minesweeper.presentation.component.ScreenUI
+import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameEvent
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameScreen
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameViewModel
 import com.gregkluska.minesweeper.presentation.ui.homescreen.HomeEvent
@@ -43,7 +44,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             ScreenUI { paddingValues ->
-                NavHost(navController = navController, startDestination = Screen.Home.route) {
+                NavHost(navController = navController, startDestination = Screen.Game.route) {
 
                     composable(route = Screen.Home.route) {
                         val viewModel = viewModel<HomeViewModel>()
@@ -56,6 +57,7 @@ class MainActivity : ComponentActivity() {
                                     HomeEvent.ButtonClick -> {
                                         navController.navigate(Screen.Game.route)
                                     }
+
                                     else -> (viewModel::handleEvent)(event)
                                 }
                             }
@@ -68,7 +70,13 @@ class MainActivity : ComponentActivity() {
                         GameScreen(
                             modifier = Modifier.padding(paddingValues),
                             state = viewModel.gameState.value,
-                            onEvent = viewModel::handleEvent
+                            onEvent = { event ->
+                                when (event) {
+                                    is GameEvent.PlaySound -> playSound(event.sound)
+                                    GameEvent.Vibrate -> vibrate()
+                                    else -> (viewModel::handleEvent)(event)
+                                }
+                            }
                         )
                     }
                 }
@@ -134,5 +142,16 @@ class MainActivity : ComponentActivity() {
 //
 //            }
         }
+    }
+
+    private fun playSound(@RawRes sound: Int) {
+        val mp = MediaPlayer.create(this@MainActivity, sound)
+        mp.start()
+    }
+
+    private fun vibrate() {
+        vibrator.vibrate(
+            VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE)
+        )
     }
 }
