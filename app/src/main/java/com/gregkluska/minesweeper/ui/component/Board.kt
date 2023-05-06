@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -47,12 +48,13 @@ fun Board(
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxWidth()
-            .then(modifier)
+            .then(modifier),
+        contentAlignment = Alignment.TopCenter
     ) {
         val rows = fields.size.toFloat()
         val cols = fields[0].size.toFloat()
 
-        val fieldSize: Float = with(LocalDensity.current) { 32.dp.toPx() }
+        val fieldSize: Float = with(LocalDensity.current) { 36.dp.toPx() }
 
         val boardWidth = fieldSize * cols
         val boardWidthDp = with(LocalDensity.current) { (fieldSize * cols).toDp() }
@@ -61,18 +63,7 @@ fun Board(
 
         val scale = remember { mutableStateOf(1f) } // Disabled for now.
 
-        // Center the board if fieldSize * fields[0].size < screen size
-        val center = boardWidth < constraints.maxWidth
-        val initialOffset = (constraints.maxWidth - boardWidth) / 2
-        val moveOffset = remember {
-            mutableStateOf(
-                if (center) {
-                    Offset(initialOffset, 0f)
-                } else {
-                    Offset.Zero
-                }
-            )
-        }
+        val moveOffset = remember { mutableStateOf(Offset.Zero) }
 
         val transformableState = rememberTransformableState { zoomChange, offsetChange, _ ->
             // scaled board width (if zoom is enabled)
@@ -100,19 +91,13 @@ fun Board(
             )
         }
 
-        val transformableModifier = if (center) {
-            Modifier
-        } else {
-            Modifier.transformable(transformableState)
-        }
-
         Canvas(
             modifier = Modifier
                 .size(
                     width = boardWidthDp,
                     height = boardHeightDp
                 )
-                .then(transformableModifier)
+                .transformable(transformableState)
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onTap = { offset ->
@@ -178,8 +163,8 @@ fun Board(
 
                     val outlineSize = 4
 
-                    val ow = if(c == 0) outlineSize else 0
-                    val oh = if(r == 0) outlineSize else 0
+                    val ow = if (c == 0) outlineSize else 0
+                    val oh = if (r == 0) outlineSize else 0
 
                     // This is to not draw outline at right and bottom sides
                     val sw = if (c + 1 == fields[0].size) outlineSize / 2 else outlineSize
