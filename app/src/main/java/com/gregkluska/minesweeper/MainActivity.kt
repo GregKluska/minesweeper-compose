@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                 setMode = viewModel::handleEvent,
                 onMenuClick = { viewModel.handleEvent(GameEvent.TryAgain) }
             ) { paddingValues ->
-                state.value.dialogQueue.peek()?.let { dialog ->
+                state.value.dialogQueue.firstOrNull()?.let { dialog ->
                     when (dialog) {
                         is GameDialogState -> {
                             GameOverDialog(

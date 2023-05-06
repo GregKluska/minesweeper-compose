@@ -23,7 +23,7 @@ sealed interface GameEvent {
 
 class GameViewModel() : ViewModel() {
 
-    private val viewModelGameState = mutableStateOf(
+    private val viewModelState = mutableStateOf(
         GameState(
             game = Minesweeper(
                 width = 10,
@@ -36,9 +36,10 @@ class GameViewModel() : ViewModel() {
     )
 
     val gameState: State<GameState>
-        get() = viewModelGameState
+        get() = viewModelState
 
     fun handleEvent(event: GameEvent) {
+        println("AppDebug: handleEvent($event)")
         when (event) {
             is GameEvent.Click -> handleClick(event.row, event.col)
             is GameEvent.ShowGameOverDialog -> addGameOverDialog(event.state)
@@ -50,23 +51,23 @@ class GameViewModel() : ViewModel() {
     }
 
     private fun setFlagMode(flagMode: Boolean) {
-        viewModelGameState.value = viewModelGameState.value.copy(flagMode = flagMode)
+        viewModelState.value = viewModelState.value.copy(flagMode = flagMode)
     }
 
     private fun handleClick(row: Int, col: Int) {
-        when (viewModelGameState.value.flagMode) {
-            true -> (viewModelGameState.value.game::handleEvent)(
+        when (viewModelState.value.flagMode) {
+            true -> (viewModelState.value.game::handleEvent)(
                 Minesweeper.Event.ToggleFlag(x = col, y = row)
             )
 
-            false -> (viewModelGameState.value.game::handleEvent)(
+            false -> (viewModelState.value.game::handleEvent)(
                 Minesweeper.Event.Reveal(x = col, y = row)
             )
         }
     }
 
     private fun addGameOverDialog(state: Minesweeper.State.GameOver) {
-        val dialogQueue = viewModelGameState.value.dialogQueue
+        val dialogQueue = viewModelState.value.dialogQueue
 
         val dialog = if (state is Minesweeper.State.Win) {
             DialogState.GameWon(
@@ -80,21 +81,23 @@ class GameViewModel() : ViewModel() {
         dialogQueue.add(dialog)
 
         // Force recomposition
-        viewModelGameState.value = viewModelGameState.value.copy(dialogQueue = LinkedList())
-        viewModelGameState.value = viewModelGameState.value.copy(dialogQueue = dialogQueue)
+        viewModelState.value = viewModelState.value.copy(dialogQueue = LinkedList())
+        viewModelState.value = viewModelState.value.copy(dialogQueue = dialogQueue)
     }
 
     private fun removeHeadDialog() {
-        val dialogQueue = viewModelGameState.value.dialogQueue
+        println("AppDebug: removeHeadDialog called")
+        val dialogQueue = viewModelState.value.dialogQueue
         dialogQueue.poll()
 
         //Force recomposition
-        viewModelGameState.value = viewModelGameState.value.copy(dialogQueue = LinkedList())
-        viewModelGameState.value = viewModelGameState.value.copy(dialogQueue = dialogQueue)
+        viewModelState.value = viewModelState.value.copy(dialogQueue = LinkedList())
+        viewModelState.value = viewModelState.value.copy(dialogQueue = dialogQueue)
+        println("AppDebug: queue " + viewModelState.value.dialogQueue)
     }
 
     private fun tryAgain() {
-        viewModelGameState.value.game.handleEvent(Minesweeper.Event.NewGame)
+        viewModelState.value.game.handleEvent(Minesweeper.Event.NewGame)
         removeHeadDialog()
     }
 
