@@ -66,6 +66,7 @@ fun Board(
         val moveOffset = remember { mutableStateOf(Offset.Zero) }
 
         val transformableState = rememberTransformableState { zoomChange, offsetChange, _ ->
+            println("AppDebug: transformable $moveOffset")
             // scaled board width (if zoom is enabled)
             val bw = boardWidth * scale.value
             // the board width that can fit on the screen

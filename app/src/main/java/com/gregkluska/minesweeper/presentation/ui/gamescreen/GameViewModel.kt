@@ -1,5 +1,6 @@
 package com.gregkluska.minesweeper.presentation.ui.gamescreen
 
+import androidx.annotation.RawRes
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -18,8 +19,10 @@ sealed interface GameEvent {
     data class Click(val row: Int, val col: Int) : GameEvent
     data class ShowGameOverDialog(val state: Minesweeper.State.GameOver) : GameEvent
     data class FlagMode(val enable: Boolean) : GameEvent
+    data class PlaySound( @RawRes val sound: Int): GameEvent
     object TryAgain : GameEvent
     object DismissDialog : GameEvent
+    object Vibrate: GameEvent
 }
 
 class GameViewModel() : ViewModel() {
@@ -47,6 +50,7 @@ class GameViewModel() : ViewModel() {
             is GameEvent.FlagMode -> setFlagMode(event.enable)
             GameEvent.DismissDialog -> removeHeadDialog()
             GameEvent.TryAgain -> tryAgain()
+            else -> {}
         }
 
     }
