@@ -19,10 +19,10 @@ sealed interface GameEvent {
     data class Click(val row: Int, val col: Int) : GameEvent
     data class ShowGameOverDialog(val state: Minesweeper.State.GameOver) : GameEvent
     data class FlagMode(val enable: Boolean) : GameEvent
-    data class PlaySound( @RawRes val sound: Int): GameEvent
+    data class PlaySound(@RawRes val sound: Int) : GameEvent
     object TryAgain : GameEvent
-    object DismissDialog : GameEvent
-    object Vibrate: GameEvent
+    object DismissDialog : GameEvent // TODO: do effects so it's all in viewmodel
+    object Vibrate : GameEvent
 }
 
 class GameViewModel() : ViewModel() {

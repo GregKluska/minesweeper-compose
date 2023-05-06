@@ -81,66 +81,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-
-
-//            val state = viewModel.gameState
-//            val game = state.value.game
-//            val flagMode = state.value.flagMode
-//            val board = game.board
-//
-//            ScreenUI(
-//                flags = game.flags.value,
-//                mines = game.mines,
-//                flagMode = flagMode,
-//                setMode = viewModel::handleEvent,
-//                onMenuClick = { viewModel.handleEvent(GameEvent.TryAgain) }
-//            ) { paddingValues ->
-//                state.value.dialogQueue.firstOrNull()?.let { dialog ->
-//                    when (dialog) {
-//                        is GameDialogState -> {
-//                            GameOverDialog(
-//                                icon = painterResource(id = dialog.icon),
-//                                time = dialog.time,
-//                                highScore = dialog.highScore,
-//                                onEvent = viewModel::handleEvent
-//                            )
-//                        }
-//                    }
-//                }
-//
-//                val shakeOffset = remember { Animatable(Offset.Zero) }
-//
-//                LaunchedEffect(game.state.value) {
-//                    game.state.value.let { gameState ->
-//                        if (gameState is Minesweeper.State.Start || gameState is Minesweeper.State.Lose) {
-//                            vibrator.vibrate(
-//                                VibrationEffect.createOneShot(
-//                                    300,
-//                                    VibrationEffect.DEFAULT_AMPLITUDE
-//                                )
-//                            )
-//                            shakeOffset.animateTo(Offset.Zero, shakeKeyframes)
-//                        }
-//
-//                        if (gameState is Minesweeper.State.GameOver) {
-//                            when (gameState) {
-//                                Minesweeper.State.Lose -> {
-//                                    val mp = MediaPlayer.create(this@MainActivity, R.raw.lose)
-//                                    mp.start()
-//                                }
-//
-//                                is Minesweeper.State.Win -> {
-//                                    val mp = MediaPlayer.create(this@MainActivity, R.raw.win)
-//                                    mp.start()
-//                                }
-//                            }
-//                            (viewModel::handleEvent)(GameEvent.ShowGameOverDialog(gameState))
-//                        }
-//                    }
-//                }
-//
-//
-//            }
         }
     }
 
