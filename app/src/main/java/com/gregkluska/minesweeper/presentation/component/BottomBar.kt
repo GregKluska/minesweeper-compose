@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper.ui.component
+package com.gregkluska.minesweeper.presentation.component
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Flag
@@ -11,8 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
-import com.gregkluska.minesweeper.GameEvent
-import com.gregkluska.minesweeper.ui.theme.MinesweeperTheme
+import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameEvent
+import com.gregkluska.minesweeper.presentation.theme.MinesweeperTheme
 
 @Composable
 fun BottomBar(

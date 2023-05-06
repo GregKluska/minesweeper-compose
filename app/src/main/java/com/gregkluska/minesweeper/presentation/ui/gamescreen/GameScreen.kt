@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper
+package com.gregkluska.minesweeper.presentation.ui.gamescreen
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
@@ -8,8 +8,9 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
-import com.gregkluska.minesweeper.ui.component.Board
-import com.gregkluska.minesweeper.ui.component.ScreenUI
+import com.gregkluska.minesweeper.core.Field
+import com.gregkluska.minesweeper.presentation.component.Board
+import com.gregkluska.minesweeper.presentation.component.ScreenUI
 
 data class GameScreenState(
     val fields: List<List<Field>>

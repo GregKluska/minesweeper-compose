@@ -1,9 +1,9 @@
-package com.gregkluska.minesweeper
+package com.gregkluska.minesweeper.core
 
 import androidx.compose.runtime.mutableStateOf
-import com.gregkluska.minesweeper.Field.Companion.DETONATED_BY_MINE
-import com.gregkluska.minesweeper.Field.Companion.DETONATED_BY_PLAYER
-import com.gregkluska.minesweeper.Field.Companion.MINE
+import com.gregkluska.minesweeper.core.Field.Companion.DETONATED_BY_MINE
+import com.gregkluska.minesweeper.core.Field.Companion.DETONATED_BY_PLAYER
+import com.gregkluska.minesweeper.core.Field.Companion.MINE
 
 /**
  * Field date class
@@ -139,7 +139,7 @@ class Minesweeper(
                 _flags.value = _flags.value - 1
             }
 
-            !isFlagged && _flags.value < mines -> {
+            _flags.value < mines -> {
                 _board[y][x].value = field.copy(isFlagged = true)
                 _flags.value = _flags.value + 1
             }

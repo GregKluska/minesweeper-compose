@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper.ui.animation
+package com.gregkluska.minesweeper.presentation.animation
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector2D

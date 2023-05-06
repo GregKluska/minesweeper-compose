@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper.ui.component
+package com.gregkluska.minesweeper.presentation.component
 
 import android.graphics.Paint
 import android.text.TextPaint
@@ -27,13 +27,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
-import com.gregkluska.minesweeper.Field
-import com.gregkluska.minesweeper.Field.Companion.DETONATED_BY_MINE
-import com.gregkluska.minesweeper.Field.Companion.DETONATED_BY_PLAYER
-import com.gregkluska.minesweeper.GameEvent
-import com.gregkluska.minesweeper.ui.canvas.drawFlag
-import com.gregkluska.minesweeper.ui.theme.MinesweeperTheme
-import com.gregkluska.minesweeper.ui.theme.Orange
+import com.gregkluska.minesweeper.core.Field
+import com.gregkluska.minesweeper.core.Field.Companion.DETONATED_BY_MINE
+import com.gregkluska.minesweeper.core.Field.Companion.DETONATED_BY_PLAYER
+import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameEvent
+import com.gregkluska.minesweeper.presentation.canvas.drawFlag
+import com.gregkluska.minesweeper.presentation.theme.MinesweeperTheme
+import com.gregkluska.minesweeper.presentation.theme.Orange
 
 
 @Composable
