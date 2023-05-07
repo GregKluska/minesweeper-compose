@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.gregkluska.minesweeper.core.Field
 import com.gregkluska.minesweeper.core.Field.Companion.DETONATED_BY_MINE
 import com.gregkluska.minesweeper.core.Field.Companion.DETONATED_BY_PLAYER
-import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameEvent
+import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEvent
 import com.gregkluska.minesweeper.presentation.canvas.drawFlag
 import com.gregkluska.minesweeper.presentation.theme.MinesweeperTheme
 import com.gregkluska.minesweeper.presentation.theme.Orange
@@ -43,7 +43,7 @@ fun Board(
     fieldColors: FieldColors = fieldColors(),
     detonatedColor: Color = MaterialTheme.colorScheme.error,
     detonatedColorAlt: Color = MaterialTheme.colorScheme.errorContainer,
-    onClick: (GameEvent.Click) -> Unit = {},
+    onClick: (GameUiEvent.Click) -> Unit = {},
 ) {
     BoxWithConstraints(
         modifier = Modifier
@@ -104,7 +104,7 @@ fun Board(
                         onTap = { offset ->
                             val x = (-moveOffset.value.x + offset.x).div(fieldSize)
                             val y = (-moveOffset.value.y + offset.y).div(fieldSize)
-                            onClick(GameEvent.Click(y.toInt(), x.toInt()))
+                            onClick(GameUiEvent.Click(y.toInt(), x.toInt()))
                         }
                     )
                 }
