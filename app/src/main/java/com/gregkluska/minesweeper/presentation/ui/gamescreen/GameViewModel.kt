@@ -29,8 +29,8 @@ sealed interface GameUiEvent {
 
 sealed interface GameUiEffect {
     object Vibrate : GameUiEffect
-    object PlayWinSound: GameUiEffect
-    object PlayLoseSound: GameUiEffect
+    object PlayWinSound : GameUiEffect
+    object PlayLoseSound : GameUiEffect
 }
 
 class GameViewModel : ViewModel() {
@@ -76,18 +76,13 @@ class GameViewModel : ViewModel() {
 
     private fun handleClick(row: Int, col: Int) {
         when (viewModelState.value.flagMode) {
-            true -> (viewModelState.value.game::handleEvent)(
-                Minesweeper.Event.ToggleFlag(x = col, y = row)
-            )
-
-            false -> (viewModelState.value.game::handleEvent)(
-                Minesweeper.Event.Reveal(x = col, y = row)
-            )
+            true -> viewModelState.value.game.toggleFlag(col, row)
+            false -> viewModelState.value.game.reveal(col, row)
         }
     }
 
     private fun tryAgain() {
-        viewModelState.value.game.handleEvent(Minesweeper.Event.NewGame)
+        viewModelState.value.game.reset()
         removeHeadDialog()
     }
 
