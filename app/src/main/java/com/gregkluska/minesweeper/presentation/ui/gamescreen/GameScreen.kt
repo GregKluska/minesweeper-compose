@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -29,10 +30,10 @@ fun GameScreen(
     onEvent: (GameUiEvent) -> Unit,
 ) {
     val game = state.game
-    val fields = game.board.map { it.map { it.value } }
+    val fields = game.boardState
     val shakeOffset = remember { Animatable(Offset.Zero) }
 
-    LaunchedEffect(game.state.value) {
+    LaunchedEffect(game.state.collectAsState().value) {
         game.state.value.let { gameState ->
             if (gameState is Minesweeper.GameState.Start || gameState is Minesweeper.GameState.Lose) {
                 onEvent(GameUiEvent.Vibrate)
@@ -77,12 +78,12 @@ fun GameScreen(
                         x = with(LocalDensity.current) { shakeOffset.value.x.toDp() },
                         y = with(LocalDensity.current) { shakeOffset.value.y.toDp() },
                     ),
-                fields = fields,
+                fields = fields.map { it.map { it.collectAsState().value } },
                 onClick = onEvent
             )
 
             BottomBar(
-                flags = game.flags.value,
+                flags = game.flags.collectAsState().value,
                 mines = game.mines,
                 flagMode = state.flagMode,
                 setMode = onEvent
