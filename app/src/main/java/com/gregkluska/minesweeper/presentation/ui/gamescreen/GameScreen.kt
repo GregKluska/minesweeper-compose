@@ -25,8 +25,8 @@ import com.gregkluska.minesweeper.presentation.component.GameOverDialog
 @Composable
 fun GameScreen(
     modifier: Modifier = Modifier,
-    state: GameState,
-    onEvent: (GameEvent) -> Unit,
+    state: GameUiState,
+    onEvent: (GameUiEvent) -> Unit,
 ) {
     val game = state.game
     val fields = game.board.map { it.map { it.value } }
@@ -34,17 +34,17 @@ fun GameScreen(
 
     LaunchedEffect(game.state.value) {
         game.state.value.let { gameState ->
-            if (gameState is Minesweeper.State.Start || gameState is Minesweeper.State.Lose) {
-                onEvent(GameEvent.Vibrate)
+            if (gameState is Minesweeper.GameState.Start || gameState is Minesweeper.GameState.Lose) {
+                onEvent(GameUiEvent.Vibrate)
                 shakeOffset.animateTo(Offset.Zero, shakeKeyframes)
             }
 
-            if (gameState is Minesweeper.State.GameOver) {
+            if (gameState is Minesweeper.GameState.GameOver) {
                 when (gameState) {
-                    Minesweeper.State.Lose -> onEvent(GameEvent.PlaySound(R.raw.lose))
-                    is Minesweeper.State.Win -> onEvent(GameEvent.PlaySound(R.raw.win))
+                    Minesweeper.GameState.Lose -> onEvent(GameUiEvent.PlaySound(R.raw.lose))
+                    is Minesweeper.GameState.Win -> onEvent(GameUiEvent.PlaySound(R.raw.win))
                 }
-                onEvent(GameEvent.ShowGameOverDialog(gameState))
+                onEvent(GameUiEvent.ShowGameOverDialog(gameState))
             }
         }
     }

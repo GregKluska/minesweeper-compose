@@ -5,27 +5,27 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 
-data class HomeState(
+data class HomeUiState(
     val text: String
 )
 
-sealed interface HomeEvent {
-    object ButtonClick : HomeEvent
+sealed interface HomeUiEvent {
+    object ButtonClick : HomeUiEvent
 }
 
 class HomeViewModel : ViewModel() {
 
-    private val viewModelState: MutableState<HomeState> = mutableStateOf(
-        HomeState(
+    private val viewModelState: MutableState<HomeUiState> = mutableStateOf(
+        HomeUiState(
             text = "Click me"
         )
     )
 
-    val state: State<HomeState>
+    val state: State<HomeUiState>
         get() = viewModelState
 
-    fun handleEvent(event: HomeEvent) = when (event) {
-        HomeEvent.ButtonClick -> {}
+    fun handleEvent(event: HomeUiEvent) = when (event) {
+        HomeUiEvent.ButtonClick -> {}
     }
 
 }

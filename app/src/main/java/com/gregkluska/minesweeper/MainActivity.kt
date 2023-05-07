@@ -11,6 +11,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RawRes
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -18,12 +19,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.gregkluska.minesweeper.core.Screen
 import com.gregkluska.minesweeper.presentation.component.ScreenUI
-import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameEvent
+import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEvent
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameScreen
+import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEffect
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameViewModel
-import com.gregkluska.minesweeper.presentation.ui.homescreen.HomeEvent
+import com.gregkluska.minesweeper.presentation.ui.homescreen.HomeUiEvent
 import com.gregkluska.minesweeper.presentation.ui.homescreen.HomeScreen
 import com.gregkluska.minesweeper.presentation.ui.homescreen.HomeViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 class MainActivity : ComponentActivity() {
 
@@ -54,7 +58,7 @@ class MainActivity : ComponentActivity() {
                             state = viewModel.state.value,
                             onEvent = { event ->
                                 when (event) {
-                                    HomeEvent.ButtonClick -> {
+                                    HomeUiEvent.ButtonClick -> {
                                         navController.navigate(Screen.Game.route)
                                     }
 
@@ -67,16 +71,20 @@ class MainActivity : ComponentActivity() {
                     composable(route = Screen.Game.route) {
                         val viewModel = viewModel<GameViewModel>()
 
+                        LaunchedEffect(Unit) {
+                            viewModel.effect.onEach { effect ->
+                                when(effect) {
+                                    GameUiEffect.Vibrate -> vibrate()
+                                    GameUiEffect.PlayLoseSound -> playSound(R.raw.lose)
+                                    GameUiEffect.PlayWinSound -> playSound(R.raw.win)
+                                }
+                            }.launchIn(this)
+                        }
+
                         GameScreen(
                             modifier = Modifier.padding(paddingValues),
-                            state = viewModel.gameState.value,
-                            onEvent = { event ->
-                                when (event) {
-                                    is GameEvent.PlaySound -> playSound(event.sound)
-                                    GameEvent.Vibrate -> vibrate()
-                                    else -> (viewModel::handleEvent)(event)
-                                }
-                            }
+                            state = viewModel.state.value,
+                            onEvent = viewModel::handleEvent
                         )
                     }
                 }

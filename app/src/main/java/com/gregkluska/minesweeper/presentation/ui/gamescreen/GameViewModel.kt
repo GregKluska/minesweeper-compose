@@ -6,29 +6,37 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.gregkluska.minesweeper.core.DialogState
 import com.gregkluska.minesweeper.core.Minesweeper
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import java.util.LinkedList
 import java.util.Queue
 
-data class GameState(
+data class GameUiState(
     val game: Minesweeper,
     val flagMode: Boolean,
     val dialogQueue: Queue<DialogState>
 )
 
-sealed interface GameEvent {
-    data class Click(val row: Int, val col: Int) : GameEvent
-    data class ShowGameOverDialog(val state: Minesweeper.State.GameOver) : GameEvent
-    data class FlagMode(val enable: Boolean) : GameEvent
-    data class PlaySound(@RawRes val sound: Int) : GameEvent
-    object TryAgain : GameEvent
-    object DismissDialog : GameEvent // TODO: do effects so it's all in viewmodel
-    object Vibrate : GameEvent
+sealed interface GameUiEvent {
+    data class Click(val row: Int, val col: Int) : GameUiEvent
+    data class ShowGameOverDialog(val state: Minesweeper.GameState.GameOver) : GameUiEvent
+    data class FlagMode(val enable: Boolean) : GameUiEvent
+    data class PlaySound(@RawRes val sound: Int) : GameUiEvent
+    object TryAgain : GameUiEvent
+    object DismissDialog : GameUiEvent // TODO: do effects so it's all in viewmodel
+    object Vibrate : GameUiEvent
 }
 
-class GameViewModel() : ViewModel() {
+sealed interface GameUiEffect {
+    object Vibrate : GameUiEffect
+    object PlayWinSound: GameUiEffect
+    object PlayLoseSound: GameUiEffect
+}
+
+class GameViewModel : ViewModel() {
 
     private val viewModelState = mutableStateOf(
-        GameState(
+        GameUiState(
             game = Minesweeper(
                 width = 10,
                 height = 10,
@@ -39,20 +47,27 @@ class GameViewModel() : ViewModel() {
         )
     )
 
-    val gameState: State<GameState>
+    val state: State<GameUiState>
         get() = viewModelState
 
-    fun handleEvent(event: GameEvent) {
+    private val viewModelEffect = MutableSharedFlow<GameUiEffect>(0)
+    val effect: SharedFlow<GameUiEffect>
+        get() = viewModelEffect
+
+    init {
+
+    }
+
+    fun handleEvent(event: GameUiEvent) {
         println("AppDebug: handleEvent($event)")
         when (event) {
-            is GameEvent.Click -> handleClick(event.row, event.col)
-            is GameEvent.ShowGameOverDialog -> addGameOverDialog(event.state)
-            is GameEvent.FlagMode -> setFlagMode(event.enable)
-            GameEvent.DismissDialog -> removeHeadDialog()
-            GameEvent.TryAgain -> tryAgain()
+            is GameUiEvent.Click -> handleClick(event.row, event.col)
+            is GameUiEvent.ShowGameOverDialog -> addGameOverDialog(event.state)
+            is GameUiEvent.FlagMode -> setFlagMode(event.enable)
+            GameUiEvent.DismissDialog -> removeHeadDialog()
+            GameUiEvent.TryAgain -> tryAgain()
             else -> {}
         }
-
     }
 
     private fun setFlagMode(flagMode: Boolean) {
@@ -76,10 +91,10 @@ class GameViewModel() : ViewModel() {
         removeHeadDialog()
     }
 
-    private fun addGameOverDialog(state: Minesweeper.State.GameOver) {
+    private fun addGameOverDialog(state: Minesweeper.GameState.GameOver) {
         val dialogQueue = viewModelState.value.dialogQueue
 
-        val dialog = if (state is Minesweeper.State.Win) {
+        val dialog = if (state is Minesweeper.GameState.Win) {
             DialogState.GameWon(
                 time = state.time.toInt(), highScore = null
             )

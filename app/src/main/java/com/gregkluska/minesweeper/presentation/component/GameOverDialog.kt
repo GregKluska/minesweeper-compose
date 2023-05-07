@@ -23,7 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameEvent
+import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEvent
 import com.gregkluska.minesweeper.R
 import com.gregkluska.minesweeper.core.DialogState
 import com.gregkluska.minesweeper.presentation.theme.MinesweeperTheme
@@ -33,7 +33,7 @@ fun GameOverDialog(
     icon: Painter,
     time: Int? = null,
     highScore: Int? = null,
-    onEvent: (GameEvent) -> Unit,
+    onEvent: (GameUiEvent) -> Unit,
 ) {
 
     val timeString = time?.let { s ->
@@ -46,7 +46,7 @@ fun GameOverDialog(
 
 
     AlertDialog(
-        onDismissRequest = { onEvent(GameEvent.DismissDialog) },
+        onDismissRequest = { onEvent(GameUiEvent.DismissDialog) },
         icon = {
             Image(
                 painter = icon,
@@ -93,7 +93,7 @@ fun GameOverDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onEvent(GameEvent.TryAgain) }
+                onClick = { onEvent(GameUiEvent.TryAgain) }
             ) {
                 Text(text = stringResource(R.string.play_again))
             }
