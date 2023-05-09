@@ -5,10 +5,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.gregkluska.minesweeper.core.GameOverDialog
-import com.gregkluska.minesweeper.core.Minesweeper
+import com.gregkluska.minesweeper.game.Minesweeper
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import java.util.LinkedList
 
 data class GameUiState(
     val game: Minesweeper,

@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper.core
+package com.gregkluska.minesweeper.game
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
