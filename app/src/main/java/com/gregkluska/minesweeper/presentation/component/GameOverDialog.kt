@@ -23,10 +23,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEvent
 import com.gregkluska.minesweeper.R
-import com.gregkluska.minesweeper.core.DialogState
+import com.gregkluska.minesweeper.core.GameOverDialog.Companion.lose
+import com.gregkluska.minesweeper.core.GameOverDialog.Companion.win
 import com.gregkluska.minesweeper.presentation.theme.MinesweeperTheme
+import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEvent
 
 @Composable
 fun GameOverDialog(
@@ -104,7 +105,7 @@ fun GameOverDialog(
 @Preview
 @Composable
 private fun GameDialogPreviewWin() {
-    val dialog = DialogState.GameWon(95, null)
+    val dialog = win(95, null)
 
     MinesweeperTheme {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -121,7 +122,7 @@ private fun GameDialogPreviewWin() {
 @Preview
 @Composable
 private fun GameDialogPreviewLose() {
-    val dialog = DialogState.GameLost(55)
+    val dialog = lose(55)
 
     MinesweeperTheme {
         Box(modifier = Modifier.fillMaxSize()) {

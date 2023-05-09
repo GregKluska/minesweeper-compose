@@ -15,7 +15,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.gregkluska.minesweeper.R
-import com.gregkluska.minesweeper.core.GameDialogState
+import com.gregkluska.minesweeper.core.GameOverDialog
 import com.gregkluska.minesweeper.core.Minesweeper
 import com.gregkluska.minesweeper.presentation.animation.Animatable
 import com.gregkluska.minesweeper.presentation.animation.shakeKeyframes
@@ -50,19 +50,13 @@ fun GameScreen(
         }
     }
 
-
-    // TODO: Refactor
-    state.dialogQueue.firstOrNull()?.let { dialog ->
-        when (dialog) {
-            is GameDialogState -> {
-                GameOverDialog(
-                    icon = painterResource(id = dialog.icon),
-                    time = dialog.time,
-                    highScore = dialog.highScore,
-                    onEvent = onEvent
-                )
-            }
-        }
+    state.dialog?.let { dialog ->
+        GameOverDialog(
+            icon = painterResource(id = dialog.icon),
+            time = dialog.time,
+            highScore = dialog.highScore,
+            onEvent = onEvent
+        )
     }
 
     Surface(

@@ -4,17 +4,16 @@ import androidx.annotation.RawRes
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.gregkluska.minesweeper.core.DialogState
+import com.gregkluska.minesweeper.core.GameOverDialog
 import com.gregkluska.minesweeper.core.Minesweeper
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import java.util.LinkedList
-import java.util.Queue
 
 data class GameUiState(
     val game: Minesweeper,
     val flagMode: Boolean,
-    val dialogQueue: Queue<DialogState>
+    val dialog: GameOverDialog?,
 )
 
 sealed interface GameUiEvent {
@@ -43,7 +42,7 @@ class GameViewModel : ViewModel() {
                 mines = 10,
             ),
             flagMode = false,
-            dialogQueue = LinkedList()
+            dialog = null
         )
     )
 
@@ -64,7 +63,7 @@ class GameViewModel : ViewModel() {
             is GameUiEvent.Click -> handleClick(event.row, event.col)
             is GameUiEvent.ShowGameOverDialog -> addGameOverDialog(event.state)
             is GameUiEvent.FlagMode -> setFlagMode(event.enable)
-            GameUiEvent.DismissDialog -> removeHeadDialog()
+            GameUiEvent.DismissDialog -> dismissDialog()
             GameUiEvent.TryAgain -> tryAgain()
             else -> {}
         }
@@ -83,36 +82,19 @@ class GameViewModel : ViewModel() {
 
     private fun tryAgain() {
         viewModelState.value.game.reset()
-        removeHeadDialog()
+        dismissDialog()
     }
 
     private fun addGameOverDialog(state: Minesweeper.GameState.GameOver) {
-        val dialogQueue = viewModelState.value.dialogQueue
-
         val dialog = if (state is Minesweeper.GameState.Win) {
-            DialogState.GameWon(
-                time = state.time.toInt(), highScore = null
-            )
+            GameOverDialog.win(state.time.toInt(), null)
         } else {
-            DialogState.GameLost(
-                highScore = null
-            )
+            GameOverDialog.lose(null)
         }
-        dialogQueue.add(dialog)
-
-        // Force recomposition
-        viewModelState.value = viewModelState.value.copy(dialogQueue = LinkedList())
-        viewModelState.value = viewModelState.value.copy(dialogQueue = dialogQueue)
+        viewModelState.value = viewModelState.value.copy(dialog = dialog)
     }
 
-    private fun removeHeadDialog() {
-        println("AppDebug: removeHeadDialog called")
-        val dialogQueue = viewModelState.value.dialogQueue
-        dialogQueue.poll()
-
-        //Force recomposition
-        viewModelState.value = viewModelState.value.copy(dialogQueue = LinkedList())
-        viewModelState.value = viewModelState.value.copy(dialogQueue = dialogQueue)
-        println("AppDebug: queue " + viewModelState.value.dialogQueue)
+    private fun dismissDialog() {
+        viewModelState.value = viewModelState.value.copy(dialog = null)
     }
 }
