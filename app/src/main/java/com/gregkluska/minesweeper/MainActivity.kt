@@ -17,7 +17,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.gregkluska.minesweeper.core.Screen
+import com.gregkluska.minesweeper.navigation.Screen
 import com.gregkluska.minesweeper.presentation.component.ScreenUI
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameScreen
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEffect

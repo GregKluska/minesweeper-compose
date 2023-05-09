@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper.core
+package com.gregkluska.minesweeper.navigation
 
 sealed class Screen(val route: String) {
 
