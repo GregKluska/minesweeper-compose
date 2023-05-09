@@ -7,16 +7,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.gregkluska.minesweeper.core.AppBarState
 import com.gregkluska.minesweeper.presentation.theme.MinesweeperTheme
 
+/**
+ * Main App component
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScreenUI(
+fun MinesweeperApp(
+    appBarState: AppBarState,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     MinesweeperTheme {
         Scaffold(
             modifier = Modifier.background(MaterialTheme.colorScheme.background),
+            topBar = { AppBar(appBarState) },
             floatingActionButton = {},
             content = content
         )

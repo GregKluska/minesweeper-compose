@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper
+package com.gregkluska.minesweeper.presentation.ui
 
 import android.content.Context
 import android.media.MediaPlayer
@@ -9,16 +9,21 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.annotation.RawRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.gregkluska.minesweeper.R
+import com.gregkluska.minesweeper.core.AppBarState
+import com.gregkluska.minesweeper.game.Minesweeper
 import com.gregkluska.minesweeper.navigation.Screen
-import com.gregkluska.minesweeper.presentation.component.ScreenUI
+import com.gregkluska.minesweeper.presentation.component.MinesweeperApp
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameScreen
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEffect
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameViewModel
@@ -29,6 +34,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 class MainActivity : ComponentActivity() {
+
+    private val mainViewModel: MainViewModel by viewModels()
 
     // Get Vibrator service
     private val vibrator: Vibrator by lazy {
@@ -46,8 +53,10 @@ class MainActivity : ComponentActivity() {
 
             val navController = rememberNavController()
 
-            ScreenUI { paddingValues ->
-                NavHost(navController = navController, startDestination = Screen.Game.route) {
+            MinesweeperApp(
+                appBarState = mainViewModel.appBarState.value
+            ) { paddingValues ->
+                NavHost(navController = navController, startDestination = Screen.Home.route) {
 
                     composable(route = Screen.Home.route) {
                         val viewModel = viewModel<HomeViewModel>()
@@ -69,10 +78,20 @@ class MainActivity : ComponentActivity() {
 
                     composable(route = Screen.Game.route) {
                         val viewModel = viewModel<GameViewModel>()
+                        val gameState = viewModel.state.value.game.state.collectAsState().value
+                        val startTime =
+                            if (gameState is Minesweeper.GameState.Start) gameState.startTime else 0L
+
+                        mainViewModel._appBarState.value = AppBarState.Game(
+                            onBack = { navController.popBackStack() },
+                            startTime = startTime,
+                            onAction = {}
+
+                        )
 
                         LaunchedEffect(Unit) {
                             viewModel.effect.onEach { effect ->
-                                when(effect) {
+                                when (effect) {
                                     GameUiEffect.Vibrate -> vibrate()
                                     GameUiEffect.PlayLoseSound -> playSound(R.raw.lose)
                                     GameUiEffect.PlayWinSound -> playSound(R.raw.win)
