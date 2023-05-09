@@ -15,8 +15,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.gregkluska.minesweeper.R
-import com.gregkluska.minesweeper.core.GameOverDialog
-import com.gregkluska.minesweeper.core.Minesweeper
+import com.gregkluska.minesweeper.game.Minesweeper
 import com.gregkluska.minesweeper.presentation.animation.Animatable
 import com.gregkluska.minesweeper.presentation.animation.shakeKeyframes
 import com.gregkluska.minesweeper.presentation.component.Board

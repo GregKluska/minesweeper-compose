@@ -1,4 +1,4 @@
-package com.gregkluska.minesweeper.core
+package com.gregkluska.minesweeper.game
 
 /**
  * Field date class

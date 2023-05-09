@@ -27,9 +27,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
-import com.gregkluska.minesweeper.core.Field
-import com.gregkluska.minesweeper.core.Field.Companion.DETONATED_BY_MINE
-import com.gregkluska.minesweeper.core.Field.Companion.DETONATED_BY_PLAYER
+import com.gregkluska.minesweeper.game.Field
+import com.gregkluska.minesweeper.game.Field.Companion.DETONATED_BY_MINE
+import com.gregkluska.minesweeper.game.Field.Companion.DETONATED_BY_PLAYER
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEvent
 import com.gregkluska.minesweeper.presentation.canvas.drawFlag
 import com.gregkluska.minesweeper.presentation.theme.MinesweeperTheme
