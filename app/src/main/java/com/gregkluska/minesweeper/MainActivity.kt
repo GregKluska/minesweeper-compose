@@ -19,12 +19,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.gregkluska.minesweeper.core.Screen
 import com.gregkluska.minesweeper.presentation.component.ScreenUI
-import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEvent
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameScreen
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEffect
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameViewModel
-import com.gregkluska.minesweeper.presentation.ui.homescreen.HomeUiEvent
 import com.gregkluska.minesweeper.presentation.ui.homescreen.HomeScreen
+import com.gregkluska.minesweeper.presentation.ui.homescreen.HomeUiEvent
 import com.gregkluska.minesweeper.presentation.ui.homescreen.HomeViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
