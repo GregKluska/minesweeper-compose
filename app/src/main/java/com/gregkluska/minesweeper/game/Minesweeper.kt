@@ -9,12 +9,25 @@ class Minesweeper(
     val mines: Int,
 ) {
 
-    sealed interface GameState {
+    sealed class GameState(
+        open val startTime: Long? = null,
+        open val endTime: Long? = null
+    ) {
         sealed interface GameOver
-        object Initial : GameState
-        data class Start(val startTime: Long) : GameState
-        data class Win(val time: Long) : GameState, GameOver
-        object Lose : GameState, GameOver
+
+        object Initial : GameState()
+
+        data class Start(override val startTime: Long) : GameState(startTime = startTime)
+
+        data class Win(
+            override val startTime: Long,
+            override val endTime: Long
+        ) : GameState(
+            startTime = startTime,
+            endTime = endTime
+        ), GameOver
+
+        object Lose : GameState(), GameOver
     }
 
     private val _boardState = List(height) { List(width) { MutableStateFlow(Field()) } }
@@ -97,8 +110,14 @@ class Minesweeper(
         revealed++
 
         if (revealed == (width * height) - mines) {
-            val startTime = (_state.value as GameState.Start).startTime // TODO: Safe check
-            _state.value = GameState.Win((System.currentTimeMillis() - startTime) / 1000)
+            (_state.value as? GameState.Start)?.startTime?.let { startTime ->
+                _state.value = GameState.Win(
+                    startTime = startTime,
+                    endTime = System.currentTimeMillis()
+                )
+            } ?: run {
+                // Illegal state. TODO: Logging
+            }
         }
 
         // Reveal all the fields around, because there's no mine there

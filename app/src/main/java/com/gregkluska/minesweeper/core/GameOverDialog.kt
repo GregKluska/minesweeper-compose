@@ -5,19 +5,19 @@ import com.gregkluska.minesweeper.R
 
 data class GameOverDialog(
     @DrawableRes val icon: Int,
-    val time: Int?,
-    val highScore: Int?
+    val time: Long?,
+    val highScore: Long?
 ) {
     companion object {
-        fun win(time: Int, highScore: Int?): GameOverDialog {
+        fun win(time: Long, highScore: Long?): GameOverDialog {
             return GameOverDialog(
                 icon = R.drawable.win_emoji,
-                time = highScore,
+                time = time,
                 highScore = highScore
             )
         }
 
-        fun lose(highScore: Int?): GameOverDialog {
+        fun lose(highScore: Long?): GameOverDialog {
             return GameOverDialog(
                 icon = R.drawable.lose_emoji,
                 time = null,
