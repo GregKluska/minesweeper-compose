@@ -27,7 +27,13 @@ class Minesweeper(
             endTime = endTime
         ), GameOver
 
-        object Lose : GameState(), GameOver
+        data class Lose(
+            override val startTime: Long,
+            override val endTime: Long
+        ) : GameState(
+            startTime = startTime,
+            endTime = endTime
+        ), GameOver
     }
 
     private val _boardState = List(height) { List(width) { MutableStateFlow(Field()) } }
@@ -102,7 +108,11 @@ class Minesweeper(
                 if (mc.first == x && mc.second == y) continue
                 _boardState.updateField(mx, my) { it.copy(value = Field.DETONATED_BY_MINE) }
             }
-            _state.value = GameState.Lose
+            val startTime = state.value.startTime ?: 0L // TODO: Illegal state
+            _state.value = GameState.Lose(
+                startTime = startTime,
+                endTime = System.currentTimeMillis()
+            )
             return
         }
 

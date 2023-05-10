@@ -41,7 +41,7 @@ fun GameScreen(
 
             if (gameState is Minesweeper.GameState.GameOver) {
                 when (gameState) {
-                    Minesweeper.GameState.Lose -> onEvent(GameUiEvent.PlaySound(R.raw.lose))
+                    is Minesweeper.GameState.Lose -> onEvent(GameUiEvent.PlaySound(R.raw.lose))
                     is Minesweeper.GameState.Win -> onEvent(GameUiEvent.PlaySound(R.raw.win))
                 }
                 onEvent(GameUiEvent.ShowGameOverDialog(gameState))
