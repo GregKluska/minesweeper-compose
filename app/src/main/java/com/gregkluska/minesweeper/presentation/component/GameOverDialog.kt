@@ -68,20 +68,21 @@ fun GameOverDialog(
                         text = time?.toDuration() ?: "-"
                     )
                 }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        modifier = Modifier
-                            .padding(end = 4.dp),
-                        imageVector = Icons.Default.Star,
-                        contentDescription = stringResource(R.string.best_time)
-                    )
-                    Text(
-                        style = MaterialTheme.typography.titleLarge,
-                        text = highScore?.toDuration() ?: "-"
-                    )
-                }
+                // TODO: Implement High Score
+//                Row(
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Icon(
+//                        modifier = Modifier
+//                            .padding(end = 4.dp),
+//                        imageVector = Icons.Default.Star,
+//                        contentDescription = stringResource(R.string.best_time)
+//                    )
+//                    Text(
+//                        style = MaterialTheme.typography.titleLarge,
+//                        text = highScore?.toDuration() ?: "-"
+//                    )
+//                }
             }
         },
         confirmButton = {
