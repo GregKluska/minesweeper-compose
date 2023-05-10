@@ -28,23 +28,15 @@ import com.gregkluska.minesweeper.core.GameOverDialog.Companion.lose
 import com.gregkluska.minesweeper.core.GameOverDialog.Companion.win
 import com.gregkluska.minesweeper.presentation.theme.MinesweeperTheme
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEvent
+import com.gregkluska.minesweeper.util.toDuration
 
 @Composable
 fun GameOverDialog(
     icon: Painter,
-    time: Int? = null,
-    highScore: Int? = null,
+    time: Long? = null,
+    highScore: Long? = null,
     onEvent: (GameUiEvent) -> Unit,
 ) {
-
-    val timeString = time?.let { s ->
-        "${s / 60}:${s % 60}"
-    } ?: "-"
-
-    val highScoreString = highScore?.let { s ->
-        "${s / 60}:${s % 60}"
-    } ?: "-"
-
 
     AlertDialog(
         onDismissRequest = { onEvent(GameUiEvent.DismissDialog) },
@@ -73,7 +65,7 @@ fun GameOverDialog(
                     )
                     Text(
                         style = MaterialTheme.typography.titleLarge,
-                        text = timeString
+                        text = time?.toDuration() ?: "-"
                     )
                 }
                 Row(
@@ -87,7 +79,7 @@ fun GameOverDialog(
                     )
                     Text(
                         style = MaterialTheme.typography.titleLarge,
-                        text = highScoreString
+                        text = highScore?.toDuration() ?: "-"
                     )
                 }
             }

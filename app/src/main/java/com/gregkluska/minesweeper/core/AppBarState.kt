@@ -15,6 +15,7 @@ sealed interface AppBarState {
     data class Game(
         val onBack: () -> Unit,
         val startTime: Long,
+        val endTime: Long? = null,
         val onAction: () -> Unit
     ) : AppBarState
 

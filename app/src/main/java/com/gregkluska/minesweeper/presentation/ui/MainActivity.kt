@@ -21,7 +21,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.gregkluska.minesweeper.R
 import com.gregkluska.minesweeper.core.AppBarState
-import com.gregkluska.minesweeper.game.Minesweeper
 import com.gregkluska.minesweeper.navigation.Screen
 import com.gregkluska.minesweeper.presentation.component.MinesweeperApp
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameScreen
@@ -60,6 +59,7 @@ class MainActivity : ComponentActivity() {
 
                     composable(route = Screen.Home.route) {
                         val viewModel = viewModel<HomeViewModel>()
+                        mainViewModel._appBarState.value = AppBarState.Empty
 
                         HomeScreen(
                             modifier = Modifier.padding(paddingValues),
@@ -79,14 +79,12 @@ class MainActivity : ComponentActivity() {
                     composable(route = Screen.Game.route) {
                         val viewModel = viewModel<GameViewModel>()
                         val gameState = viewModel.state.value.game.state.collectAsState().value
-                        val startTime =
-                            if (gameState is Minesweeper.GameState.Start) gameState.startTime else 0L
 
                         mainViewModel._appBarState.value = AppBarState.Game(
                             onBack = { navController.popBackStack() },
-                            startTime = startTime,
+                            startTime = gameState.startTime?: 0L,
+                            endTime = gameState.endTime,
                             onAction = {}
-
                         )
 
                         LaunchedEffect(Unit) {

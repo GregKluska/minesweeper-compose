@@ -86,7 +86,7 @@ class GameViewModel : ViewModel() {
 
     private fun addGameOverDialog(state: Minesweeper.GameState.GameOver) {
         val dialog = if (state is Minesweeper.GameState.Win) {
-            GameOverDialog.win(state.time.toInt(), null)
+            GameOverDialog.win(state.endTime - state.startTime, null)
         } else {
             GameOverDialog.lose(null)
         }
