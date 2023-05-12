@@ -3,6 +3,9 @@ package com.gregkluska.minesweeper.core
 import androidx.annotation.DrawableRes
 import com.gregkluska.minesweeper.R
 
+/**
+ * TO BE REMOVED
+ */
 data class GameOverDialog(
     @DrawableRes val icon: Int,
     val time: Long?,
