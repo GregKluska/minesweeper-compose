@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -24,22 +23,23 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gregkluska.minesweeper.R
-import com.gregkluska.minesweeper.core.GameOverDialog.Companion.lose
-import com.gregkluska.minesweeper.core.GameOverDialog.Companion.win
+import com.gregkluska.minesweeper.core.DialogState
 import com.gregkluska.minesweeper.presentation.theme.MinesweeperTheme
-import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEvent
+import com.gregkluska.minesweeper.util.lose
 import com.gregkluska.minesweeper.util.toDuration
+import com.gregkluska.minesweeper.util.win
 
 @Composable
 fun GameOverDialog(
     icon: Painter,
     time: Long? = null,
     highScore: Long? = null,
-    onEvent: (GameUiEvent) -> Unit,
+    onDismiss: () -> Unit = {},
+    onTryAgain: () -> Unit = {}
 ) {
 
     AlertDialog(
-        onDismissRequest = { onEvent(GameUiEvent.DismissDialog) },
+        onDismissRequest = onDismiss,
         icon = {
             Image(
                 painter = icon,
@@ -87,7 +87,7 @@ fun GameOverDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onEvent(GameUiEvent.TryAgain) }
+                onClick = onTryAgain
             ) {
                 Text(text = stringResource(R.string.play_again))
             }
@@ -98,15 +98,14 @@ fun GameOverDialog(
 @Preview
 @Composable
 private fun GameDialogPreviewWin() {
-    val dialog = win(95, null)
+    val dialog = DialogState.GameOver.win(95, null, {}, {})
 
     MinesweeperTheme {
         Box(modifier = Modifier.fillMaxSize()) {
             GameOverDialog(
                 icon = painterResource(id = dialog.icon),
                 time = dialog.time,
-                highScore = dialog.highScore,
-                onEvent = {}
+                highScore = dialog.highScore
             )
         }
     }
@@ -115,7 +114,7 @@ private fun GameDialogPreviewWin() {
 @Preview
 @Composable
 private fun GameDialogPreviewLose() {
-    val dialog = lose(55)
+    val dialog = DialogState.GameOver.lose(55, {}, {})
 
     MinesweeperTheme {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -123,7 +122,6 @@ private fun GameDialogPreviewLose() {
                 icon = painterResource(id = dialog.icon),
                 time = dialog.time,
                 highScore = dialog.highScore,
-                onEvent = {}
             )
         }
     }

@@ -7,9 +7,11 @@ import com.gregkluska.minesweeper.core.AppBarState
 
 class MainViewModel : ViewModel() {
 
-    val _appBarState = mutableStateOf<AppBarState>(AppBarState.Hide)
+    private val _appBarState = mutableStateOf<AppBarState>(AppBarState.Hide)
     val appBarState: State<AppBarState>
         get() = _appBarState
 
-
+    fun setAppBar(state: AppBarState) {
+        _appBarState.value = state
+    }
 }

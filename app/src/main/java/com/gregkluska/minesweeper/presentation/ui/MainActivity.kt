@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,6 +23,8 @@ import androidx.navigation.compose.rememberNavController
 import com.gregkluska.minesweeper.R
 import com.gregkluska.minesweeper.core.AppBarState
 import com.gregkluska.minesweeper.navigation.Screen
+import com.gregkluska.minesweeper.presentation.animation.shakeKeyframes
+import com.gregkluska.minesweeper.presentation.component.ProcessDialog
 import com.gregkluska.minesweeper.presentation.component.MinesweeperApp
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameScreen
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEffect
@@ -55,11 +58,12 @@ class MainActivity : ComponentActivity() {
             MinesweeperApp(
                 appBarState = mainViewModel.appBarState.value
             ) { paddingValues ->
+
                 NavHost(navController = navController, startDestination = Screen.Home.route) {
 
                     composable(route = Screen.Home.route) {
                         val viewModel = viewModel<HomeViewModel>()
-                        mainViewModel._appBarState.value = AppBarState.Empty
+                        mainViewModel.setAppBar(AppBarState.Empty)
 
                         HomeScreen(
                             modifier = Modifier.padding(paddingValues),
@@ -78,28 +82,37 @@ class MainActivity : ComponentActivity() {
 
                     composable(route = Screen.Game.route) {
                         val viewModel = viewModel<GameViewModel>()
-                        val gameState = viewModel.state.value.game.state.collectAsState().value
+                        val state = viewModel.state.value
+                        val gameState = state.game.state.collectAsState().value
 
-                        mainViewModel._appBarState.value = AppBarState.Game(
+                        mainViewModel.setAppBar(AppBarState.Game(
                             onBack = { navController.popBackStack() },
-                            startTime = gameState.startTime?: 0L,
+                            startTime = gameState.startTime ?: 0L,
                             endTime = gameState.endTime,
                             onAction = {}
-                        )
+                        ))
 
                         LaunchedEffect(Unit) {
                             viewModel.effect.onEach { effect ->
                                 when (effect) {
-                                    GameUiEffect.Vibrate -> vibrate()
+                                    GameUiEffect.Vibrate -> {
+                                        vibrate()
+                                        viewModel.shakeOffset.animateTo(Offset.Zero, shakeKeyframes)
+                                    }
                                     GameUiEffect.PlayLoseSound -> playSound(R.raw.lose)
                                     GameUiEffect.PlayWinSound -> playSound(R.raw.win)
                                 }
                             }.launchIn(this)
                         }
 
+                        state.dialogQueue.dialog.value?.let {
+                            ProcessDialog(it)
+                        }
+
                         GameScreen(
                             modifier = Modifier.padding(paddingValues),
                             state = viewModel.state.value,
+                            shakeOffset = viewModel.shakeOffset.value,
                             onEvent = viewModel::handleEvent
                         )
                     }
