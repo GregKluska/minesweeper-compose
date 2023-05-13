@@ -25,6 +25,7 @@ data class GameUiState(
 sealed interface GameUiEvent {
     data class Click(val row: Int, val col: Int) : GameUiEvent
     data class FlagMode(val enable: Boolean) : GameUiEvent
+    data class BackButtonPressed(val action: () -> Unit) : GameUiEvent
 }
 
 sealed interface GameUiEffect {
@@ -36,12 +37,10 @@ sealed interface GameUiEffect {
 class GameViewModel : ViewModel() {
 
     companion object {
-
         private val VibrateOnState = listOf(
             Minesweeper.GameState.Start::class,
             Minesweeper.GameState.Lose::class
         )
-
     }
 
     private val viewModelState = mutableStateOf(
@@ -105,6 +104,23 @@ class GameViewModel : ViewModel() {
         when (event) {
             is GameUiEvent.Click -> handleClick(event.row, event.col)
             is GameUiEvent.FlagMode -> setFlagMode(event.enable)
+            is GameUiEvent.BackButtonPressed -> onBackDialog(event)
+        }
+    }
+
+    private fun onBackDialog(event: GameUiEvent.BackButtonPressed) {
+        if(viewModelState.value.game.state.value !is Minesweeper.GameState.Start) {
+            event.action()
+        } else {
+            viewModelState.value.dialogQueue.appendDialog(
+                state = DialogState.AreYouSure(
+                    onConfirm = {
+                        viewModelState.value.dialogQueue.removeHeadDialog()
+                        event.action()
+                    },
+                    onDismiss = viewModelState.value.dialogQueue::removeHeadDialog
+                )
+            )
         }
     }
 

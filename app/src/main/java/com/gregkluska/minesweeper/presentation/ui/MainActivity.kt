@@ -8,6 +8,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RawRes
@@ -28,6 +29,7 @@ import com.gregkluska.minesweeper.presentation.component.ProcessDialog
 import com.gregkluska.minesweeper.presentation.component.MinesweeperApp
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameScreen
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEffect
+import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEvent
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameViewModel
 import com.gregkluska.minesweeper.presentation.ui.homescreen.HomeScreen
 import com.gregkluska.minesweeper.presentation.ui.homescreen.HomeUiEvent
@@ -86,11 +88,15 @@ class MainActivity : ComponentActivity() {
                         val gameState = state.game.state.collectAsState().value
 
                         mainViewModel.setAppBar(AppBarState.Game(
-                            onBack = { navController.popBackStack() },
+                            onBack = { viewModel.handleEvent(GameUiEvent.BackButtonPressed { navController.popBackStack() }) },
                             startTime = gameState.startTime ?: 0L,
                             endTime = gameState.endTime,
                             onAction = {}
                         ))
+
+                        BackHandler(true) {
+                            viewModel.handleEvent(GameUiEvent.BackButtonPressed { navController.popBackStack() })
+                        }
 
                         LaunchedEffect(Unit) {
                             viewModel.effect.onEach { effect ->
@@ -99,6 +105,7 @@ class MainActivity : ComponentActivity() {
                                         vibrate()
                                         viewModel.shakeOffset.animateTo(Offset.Zero, shakeKeyframes)
                                     }
+
                                     GameUiEffect.PlayLoseSound -> playSound(R.raw.lose)
                                     GameUiEffect.PlayWinSound -> playSound(R.raw.win)
                                 }
