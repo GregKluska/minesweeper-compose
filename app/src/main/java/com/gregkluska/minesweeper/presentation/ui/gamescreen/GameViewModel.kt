@@ -3,6 +3,7 @@ package com.gregkluska.minesweeper.presentation.ui.gamescreen
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Offset
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gregkluska.minesweeper.core.DialogState
@@ -34,7 +35,9 @@ sealed interface GameUiEffect {
     object PlayLoseSound : GameUiEffect
 }
 
-class GameViewModel : ViewModel() {
+class GameViewModel(
+    savedStateHandle: SavedStateHandle,
+) : ViewModel() {
 
     companion object {
         private val VibrateOnState = listOf(
@@ -46,9 +49,9 @@ class GameViewModel : ViewModel() {
     private val viewModelState = mutableStateOf(
         GameUiState(
             game = Minesweeper(
-                width = 10,
-                height = 10,
-                mines = 10,
+                width = checkNotNull(savedStateHandle["width"]),
+                height = checkNotNull(savedStateHandle["height"]),
+                mines = checkNotNull(savedStateHandle["mines"]),
             ),
             flagMode = false,
             dialogQueue = DialogQueue()

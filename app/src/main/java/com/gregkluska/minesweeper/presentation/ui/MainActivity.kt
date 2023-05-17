@@ -23,17 +23,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.gregkluska.minesweeper.R
 import com.gregkluska.minesweeper.core.AppBarState
-import com.gregkluska.minesweeper.navigation.Screen
 import com.gregkluska.minesweeper.presentation.animation.shakeKeyframes
-import com.gregkluska.minesweeper.presentation.component.ProcessDialog
 import com.gregkluska.minesweeper.presentation.component.MinesweeperApp
+import com.gregkluska.minesweeper.presentation.component.ProcessDialog
+import com.gregkluska.minesweeper.presentation.navigation.Screen
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameScreen
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEffect
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameUiEvent
 import com.gregkluska.minesweeper.presentation.ui.gamescreen.GameViewModel
 import com.gregkluska.minesweeper.presentation.ui.homescreen.HomeScreen
 import com.gregkluska.minesweeper.presentation.ui.homescreen.HomeUiEvent
-import com.gregkluska.minesweeper.presentation.ui.homescreen.HomeViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -64,25 +63,25 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = Screen.Home.route) {
 
                     composable(route = Screen.Home.route) {
-                        val viewModel = viewModel<HomeViewModel>()
+//                        val viewModel = viewModel<HomeViewModel>()
                         mainViewModel.setAppBar(AppBarState.Empty)
 
                         HomeScreen(
                             modifier = Modifier.padding(paddingValues),
-                            state = viewModel.state.value,
                             onEvent = { event ->
                                 when (event) {
-                                    HomeUiEvent.ButtonClick -> {
-                                        navController.navigate(Screen.Game.route)
+                                    is HomeUiEvent.GameStart -> {
+                                        navController.navigate("game/${event.width}/${event.height}/${event.mines}")
                                     }
-
-                                    else -> (viewModel::handleEvent)(event)
                                 }
                             }
                         )
                     }
 
-                    composable(route = Screen.Game.route) {
+                    composable(
+                        route = Screen.Game.route + "/" + Screen.Game.arguments.joinToString("/") { "{${it.name}}" },
+                        arguments = Screen.Game.arguments
+                    ) {
                         val viewModel = viewModel<GameViewModel>()
                         val state = viewModel.state.value
                         val gameState = state.game.state.collectAsState().value

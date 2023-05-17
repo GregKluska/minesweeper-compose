@@ -2,6 +2,7 @@ package com.gregkluska.minesweeper.presentation.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -21,7 +22,7 @@ fun MinesweeperApp(
 ) {
     MinesweeperTheme {
         Scaffold(
-            modifier = Modifier.background(MaterialTheme.colorScheme.background),
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
             topBar = { AppBar(appBarState) },
             floatingActionButton = {},
             content = content
