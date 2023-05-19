@@ -76,7 +76,7 @@ class GameViewModel(
             if (gameState is Minesweeper.GameState.GameOver) {
                 when (gameState) {
                     is Minesweeper.GameState.Win -> {
-                        viewModelEffect.emit(GameUiEffect.PlayWinSound)
+//                        viewModelEffect.emit(GameUiEffect.PlayWinSound)
                         viewModelState.value.dialogQueue.appendDialog(
                             state = DialogState.GameOver.win(
                                 time = gameState.endTime - gameState.startTime,
@@ -88,7 +88,7 @@ class GameViewModel(
                     }
 
                     is Minesweeper.GameState.Lose -> {
-                        viewModelEffect.emit(GameUiEffect.PlayLoseSound)
+//                        viewModelEffect.emit(GameUiEffect.PlayLoseSound)
                         viewModelState.value.dialogQueue.appendDialog(
                             state = DialogState.GameOver.lose(
                                 highScore = null,
